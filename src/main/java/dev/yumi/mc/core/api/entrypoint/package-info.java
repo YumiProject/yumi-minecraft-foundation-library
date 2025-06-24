@@ -7,11 +7,11 @@
  */
 
 /**
- * <h1>Entrypoints</h1>
+ * <h2>Entrypoints</h2>
  * <p>
  * Entrypoints are points of entry for your mod which translates to a key in mod manifests that are linked to a Java type.
  *
- * <h2 id="registering_entrypoints">Registering entrypoints</h2>
+ * <h3 id="registering_entrypoints">Registering entrypoints</h3>
  * <p>
  * Since the goal of entrypoints is to give points of entry,
  * instead of registering them through Java code like you would for {@linkplain dev.yumi.commons.event.Event an event},
@@ -27,8 +27,8 @@
  * <p>
  * Mod manifests take different forms depending on your mod loader.
  *
- * <h3>Fabric</h3>
- * <h4>Built-in entrypoint system</h4>
+ * <h4>Fabric</h4>
+ * <h5>Built-in entrypoint system</h5>
  * <p>
  * Fabric has a built-in entrypoint system (which this library inspired from), this means in your {@code fabric.mod.json}
  * you can use the regular Fabric {@code entrypoints} key:
@@ -40,7 +40,7 @@
  * <p>
  * This also comes with the advantage of being able to use Fabric's language provider if necessary.
  *
- * <h4>Yumi-provided entrypoint system</h4>
+ * <h5>Yumi-provided entrypoint system</h5>
  * <p>
  * Yumi also has its own entrypoint system which can be specified in a {@code fabric.mod.json}'s {@code custom} block:
  * <pre>{@code "custom": {
@@ -51,14 +51,14 @@
  * 	}
  * }}</pre>
  *
- * <h3>NeoForge</h3>
+ * <h4>NeoForge</h4>
  * <p>
  * NeoForge does not have a built-in entrypoint system unlike Fabric, as it relies on classpath analysis and annotations instead.
  * The entrypoint system takes a similar form in a {@code neoforge.mods.toml} file, in a {@code modproperties} block:
  * <pre>{@code [modproperties.modid."yumi:entrypoints"]
  * "yumi:init": "org.example.mod.ModInitializer"}</pre>
  *
- * <h2>Calling entrypoints</h2>
+ * <h3>Calling entrypoints</h3>
  * <p>
  * The advantage of entrypoints is you can define your own entrypoints for other mods to use,
  * this is especially practical for APIs provided by mods and can lead to an organic load order that doesn't have to worry about
