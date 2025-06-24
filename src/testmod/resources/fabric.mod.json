@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "yumi_mc_core_testmod",
+	"name": "Yumi Minecraft Libraries: Foundation (Test)",
+	"version": "1.0.0",
+	"entrypoints": {
+		"yumi:init": [
+			"dev.yumi.mc.core.test.TestModInitializer"
+		]
+	},
+	"custom": {
+		"yumi:entrypoints": {
+			"yumi:client_init": [
+				"dev.yumi.mc.core.test.client.TestClientModInitializer"
+			],
+			"yumi:dedicated_server_init": [
+				"dev.yumi.mc.core.test.server.TestDedicatedServerModInitializer"
+			]
+		}
+	}
+}

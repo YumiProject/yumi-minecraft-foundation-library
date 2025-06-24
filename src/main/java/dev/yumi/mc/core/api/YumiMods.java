@@ -1,0 +1,76 @@
+/*
+ * Copyright 2025 Yumi Project
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+package dev.yumi.mc.core.api;
+
+import dev.yumi.commons.event.EventManager;
+import dev.yumi.mc.core.api.entrypoint.EntrypointContainer;
+import dev.yumi.mc.core.impl.YumiModsImpl;
+import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+
+public interface YumiMods {
+	/**
+	 * Represents the Yumi event manager.
+	 *
+	 * @see dev.yumi.commons.event
+	 */
+	EventManager<Identifier> EVENTS = YumiModsImpl.INSTANCE.eventManager;
+
+	static YumiMods get() {
+		return YumiModsImpl.INSTANCE;
+	}
+
+	/**
+	 * Gets the container for a given mod.
+	 *
+	 * @param id the identifier of the mod
+	 * @return the mod container, if present
+	 */
+	Optional<ModContainer> getMod(String id);
+
+	/**
+	 * Gets all mod containers.
+	 *
+	 * @return a collection of all loaded mod containers
+	 */
+	@UnmodifiableView
+	Collection<ModContainer> getMods();
+
+	/**
+	 * Gets all entrypoints for a given {@code key} and {@code type}.
+	 *
+	 * @param key the key of the entrypoint
+	 * @param type the corresponding type of the entrypoint
+	 * @return a list of the found entrypoints
+	 * @param <T> the type of the entrypoint
+	 * @see #invokeEntrypoints(String, Class, BiConsumer)
+	 */
+	<T> List<EntrypointContainer<T>> getEntrypoints(String key, Class<T> type);
+
+	/**
+	 * Invokes the entrypoints of a given {@code key} and {@code type} to do the given {@code action}.
+	 *
+	 * @param key the key of the entrypoint
+	 * @param type the corresponding type of the entrypoint
+	 * @param action the action to do to invoke the found entrypoints
+	 * @param <T> the type of the entrypoint
+	 * @see #getEntrypoints(String, Class)
+	 */
+	default <T> void invokeEntrypoints(String key, Class<T> type, BiConsumer<T, ModContainer> action) {
+		var entrypoints = this.getEntrypoints(key, type);
+		for (var entrypoint : entrypoints) {
+			action.accept(entrypoint.value(), entrypoint.mod());
+		}
+	}
+}

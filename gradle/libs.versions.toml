@@ -1,0 +1,37 @@
+[versions]
+minecraft = "1.21.1"
+fabric-loader = "0.16.14"
+neoforge-loader = "7.0.11"
+mappings-yalmm = "5"
+
+# Dependencies
+yumi-commons = "1.0.0-alpha.12"
+
+# Gradle
+gradle-licenser = "2.1.+"
+gradle-loom = "1.11.0-alpha.29"
+gradle-lambdamcdev = "1.2.+"
+gradle-nexus-publish = "2.0.0"
+gson = "2.11.0"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+neoforge-loader = { module = "net.neoforged.fancymodloader:loader", version.ref = "neoforge-loader" }
+
+# Dependencies
+yumi-commons-core = { module = "dev.yumi.commons:yumi-commons-core", version.ref = "yumi-commons" }
+yumi-commons-collections = { module = "dev.yumi.commons:yumi-commons-collections", version.ref = "yumi-commons" }
+yumi-commons-event = { module = "dev.yumi.commons:yumi-commons-event", version.ref = "yumi-commons" }
+
+# Gradle
+gradle-licenser = { module = "dev.yumi:yumi-gradle-licenser", version.ref = "gradle-licenser" }
+gradle-loom = { module = "net.fabricmc:fabric-loom", version.ref = "gradle-loom" }
+gradle-lambdamcdev = { module = "dev.lambdaurora.mcdev:dev.lambdaurora.mcdev.gradle.plugin", version.ref = "gradle-lambdamcdev" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+# Gradle
+[plugins]
+licenser = { id = "dev.yumi.gradle.licenser", version.ref = "gradle-licenser" }
+loom = { id = "fabric-loom", version.ref = "gradle-loom" }
+lambdamcdev = { id = "dev.lambdaurora.mcdev", version.ref = "gradle-lambdamcdev" }

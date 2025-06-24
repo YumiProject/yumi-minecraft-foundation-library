@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MPL 2.0"
+
+[[mods]]
+modId = "yumi_mc_core_testmod"
+version = "1.0.0"
+displayName = "Yumi Minecraft Libraries: Foundation (Test)"
+description = "Testmod for Yumi Minecraft Libraries: Foundation"
+authors = "The Yumi Project, LambdAurora"
+
+[[dependencies.yumi_mc_core_testmod]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.yumi_mc_core_testmod]]
+modId = "yumi_mc_core"
+type = "required"
+ordering = "NONE"
+side = "CLIENT"
+
+[modproperties.yumi_mc_core_testmod."yumi:entrypoints"]
+"yumi:init" = "dev.yumi.mc.core.test.TestModInitializer"
+"yumi:client_init" = "dev.yumi.mc.core.test.client.TestClientModInitializer"
+"yumi:dedicated_server_init" = "dev.yumi.mc.core.test.server.TestDedicatedServerModInitializer"
