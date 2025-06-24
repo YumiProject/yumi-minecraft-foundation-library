@@ -83,8 +83,14 @@ loom {
 		useLegacyMixinAp = false
 	}
 	runs {
-		register("testClient") {
+		register("testmodClient") {
+			configName = "Testmod Client"
 			client()
+			source(testmod)
+		}
+		register("testServer") {
+			configName = "Testmod Server"
+			server()
 			source(testmod)
 		}
 	}
@@ -108,7 +114,7 @@ tasks.javadoc {
 	}
 }
 
-//region Testmod JAR
+//region Testmod
 val testmodJar = tasks.register<Jar>("testmodJar") {
 	this.group = "build"
 	this.from(testmod.output)
