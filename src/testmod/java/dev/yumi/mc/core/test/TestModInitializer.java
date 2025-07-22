@@ -9,6 +9,7 @@
 package dev.yumi.mc.core.test;
 
 import dev.yumi.mc.core.api.ModContainer;
+import dev.yumi.mc.core.api.YumiMods;
 import dev.yumi.mc.core.api.entrypoint.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,5 +20,8 @@ public class TestModInitializer implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Initializing test mod {}...", mod.getName());
+		LOGGER.info("Is development? {}", YumiMods.get().isDevelopmentEnvironment());
+		LOGGER.info("Game Directory: {}", YumiMods.get().getGameDirectory());
+		LOGGER.info("Config Directory: {}", YumiMods.get().getConfigDirectory());
 	}
 }

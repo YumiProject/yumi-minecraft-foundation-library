@@ -8,7 +8,11 @@
 	"mixins": [
 		"BootstrapAccessor",
 		"BuiltInRegistriesMixin",
+		"crash.BlockEntityMixin",
+		"crash.CrashReportCategoryMixin",
 		"crash.CrashReportMixin",
+		"crash.EntityMixin",
+		"crash.LevelMixin",
 		"crash.SystemReportMixin"
 	],
 	"client": [

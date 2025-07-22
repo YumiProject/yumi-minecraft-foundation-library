@@ -14,7 +14,8 @@ base.archivesName.set(project.property("archives_base_name") as String)
 lambdamcdev {
 	manifests {
 		fmj {
-			this.withName("Yumi Minecraft Libraries: Foundation")
+			this.withName(Constants.PROJECT_NAME)
+			this.withDescription(Constants.PROJECT_DESCRIPTION)
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiModsImpl::INSTANCE")
 			this.withDepend("minecraft", "~1.21")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
@@ -27,7 +28,8 @@ lambdamcdev {
 			}
 		}
 		nmt {
-			this.withName("Yumi Minecraft Libraries: Foundation")
+			this.withName(Constants.PROJECT_NAME)
+			this.withDescription(Constants.PROJECT_DESCRIPTION)
 			this.withMixins("yumi_mc_core.mixins.json")
 			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiModsImpl::INSTANCE")
 		}

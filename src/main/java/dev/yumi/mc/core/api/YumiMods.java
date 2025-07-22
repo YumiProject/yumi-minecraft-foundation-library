@@ -14,6 +14,7 @@ import dev.yumi.mc.core.impl.YumiModsImpl;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,21 @@ public interface YumiMods {
 	static YumiMods get() {
 		return YumiModsImpl.INSTANCE;
 	}
+
+	/**
+	 * {@return {@code true} if the current environment is a development environment, or {@code false} otherwise}
+	 */
+	boolean isDevelopmentEnvironment();
+
+	/**
+	 * {@return the current game working directory}
+	 */
+	Path getGameDirectory();
+
+	/**
+	 * {@return the current directory for game configuration files}
+	 */
+	Path getConfigDirectory();
 
 	/**
 	 * Gets the container for a given mod.

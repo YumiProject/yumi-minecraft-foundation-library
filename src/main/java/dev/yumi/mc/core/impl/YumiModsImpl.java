@@ -22,6 +22,7 @@ import dev.yumi.mc.core.impl.mod.NeoModContainer;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -33,11 +34,14 @@ public final class YumiModsImpl implements YumiMods, ModInitializer {
 			Identifier.of("yumi", "default"),
 			Identifier::parse
 	);
+	private final CurrentRuntime runtime;
 	private final Map<String, ExtendedModContainer> modsMap = new HashMap<>();
 	private final List<ExtendedModContainer> mods = new ArrayList<>();
 	private final EntrypointStorage entrypointStorage;
 
 	public YumiModsImpl() {
+		this.runtime = EnvironmentUtils.FABRIC ? new CurrentRuntime.FabricRuntime() : new CurrentRuntime.NeoForgeRuntime();
+
 		var initializers = List.<Supplier<Consumer<List<ExtendedModContainer>>>>of(
 				() -> FabricModContainer::init,
 				() -> NeoModContainer::init
@@ -89,6 +93,21 @@ public final class YumiModsImpl implements YumiMods, ModInitializer {
 				}
 			}
 		});
+	}
+
+	@Override
+	public boolean isDevelopmentEnvironment() {
+		return this.runtime.isDevelopmentEnvironment();
+	}
+
+	@Override
+	public Path getGameDirectory() {
+		return this.runtime.getGameDirectory();
+	}
+
+	@Override
+	public Path getConfigDirectory() {
+		return this.runtime.getConfigDirectory();
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public final class FabricModContainer extends AbstractModContainer {
 				.filter(entry -> entry.value != null)
 				.collect(Collectors.toMap(Entry::key, Entry::value));
 
-		return new ManifestCustomValue.ObjectValue(map);
+		return new ManifestCustomValue.ObjectValue(Map.copyOf(map));
 	}
 
 	@Override

@@ -11,7 +11,10 @@ package dev.yumi.mc.core.api.metadata;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public sealed interface ManifestCustomValue<T> {
@@ -29,71 +32,10 @@ public sealed interface ManifestCustomValue<T> {
 	}
 
 	record ArrayValue(@Unmodifiable List<ManifestCustomValue<?>> value)
-			implements ManifestCustomValue<List<ManifestCustomValue<?>>>, SequencedCollection<ManifestCustomValue<?>> {
-		@Override
-		public int size() {
-			return this.value.size();
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return this.value.isEmpty();
-		}
-
-		@Override
-		public boolean contains(Object o) {
-			return this.value.contains(o);
-		}
-
+			implements ManifestCustomValue<List<ManifestCustomValue<?>>>, Iterable<ManifestCustomValue<?>> {
 		@Override
 		public @NotNull Iterator<ManifestCustomValue<?>> iterator() {
 			return this.value.iterator();
-		}
-
-		@Override
-		public Object @NotNull [] toArray() {
-			return this.value.toArray();
-		}
-
-		@Override
-		public <T> T @NotNull [] toArray(@NotNull T @NotNull [] a) {
-			return this.value.toArray(a);
-		}
-
-		@Override
-		public boolean add(ManifestCustomValue<?> manifestCustomValue) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean remove(Object o) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean containsAll(@NotNull Collection<?> c) {
-			//noinspection SlowListContainsAll
-			return this.value.containsAll(c);
-		}
-
-		@Override
-		public boolean addAll(@NotNull Collection<? extends ManifestCustomValue<?>> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean removeAll(@NotNull Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean retainAll(@NotNull Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void clear() {
-			throw new UnsupportedOperationException();
 		}
 
 		@Override
@@ -104,11 +46,6 @@ public sealed interface ManifestCustomValue<T> {
 		@Override
 		public @NotNull Spliterator<ManifestCustomValue<?>> spliterator() {
 			return this.value.spliterator();
-		}
-
-		@Override
-		public SequencedCollection<ManifestCustomValue<?>> reversed() {
-			return this.value.reversed();
 		}
 	}
 

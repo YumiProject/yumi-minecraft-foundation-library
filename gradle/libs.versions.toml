@@ -9,7 +9,7 @@ yumi-commons = "1.0.0-alpha.12"
 
 # Gradle
 gradle-licenser = "2.1.+"
-gradle-loom = "1.11.0-alpha.29"
+gradle-loom = "1.11.+"
 gradle-lambdamcdev = "1.2.+"
 gradle-nexus-publish = "2.0.0"
 gson = "2.11.0"
