@@ -1,21 +1,32 @@
 import net.fabricmc.loom.LoomGradleExtension
 import net.fabricmc.loom.api.mappings.layered.MappingsNamespace
 import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RemapSourcesJarTask
 import yumimc.Constants
 import yumimc.task.FabricTransformJar
 
 plugins {
 	id("yumi-mc-core")
 	alias(libs.plugins.licenser)
+	alias(libs.plugins.nexus.publish)
+	`maven-publish`
+	signing
 }
 
 base.archivesName.set(project.property("archives_base_name") as String)
 
 lambdamcdev {
 	manifests {
-		fmj {
+		val fmj = fmj {
 			this.withName(Constants.PROJECT_NAME)
 			this.withDescription(Constants.PROJECT_DESCRIPTION)
+			this.withAuthors(Constants.DEVELOPERS.stream().map { it.name }.toList())
+			this.withContact {
+				it.withHomepage(Constants.PROJECT_URL)
+					.withSources(Constants.GIT_URL)
+					.withIssues(Constants.ISSUES_URL)
+			}
+			this.withLicense(Constants.LICENSE_NAME)
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiModsImpl::INSTANCE")
 			this.withDepend("minecraft", "~1.21")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
@@ -28,8 +39,7 @@ lambdamcdev {
 			}
 		}
 		nmt {
-			this.withName(Constants.PROJECT_NAME)
-			this.withDescription(Constants.PROJECT_DESCRIPTION)
+			fmj.copyTo(this)
 			this.withMixins("yumi_mc_core.mixins.json")
 			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiModsImpl::INSTANCE")
 		}
@@ -79,7 +89,6 @@ dependencies {
 }
 
 loom {
-	runtimeOnlyLog4j = true
 	@Suppress("UnstableApiUsage")
 	mixin {
 		useLegacyMixinAp = false
@@ -139,12 +148,7 @@ license {
 }
 
 //region Mojmap
-val mojmap by sourceSets.creating {}
-val mojangMappings by configurations.creating {}
-
-dependencies {
-	mojangMappings(loom.officialMojangMappings())
-}
+val mojmap = lambdamcdev.setupMojmapRemapping()
 
 tasks.remapJar.configure {
 	this.archiveClassifier = "unprocessed"
@@ -157,18 +161,29 @@ val processFabric by tasks.registering(FabricTransformJar::class) {
 	inputJar.set(tasks.remapJar.flatMap { it.archiveFile })
 }
 
+afterEvaluate {
+	lambdamcdev.replaceArtifactInConfiguration(
+		JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME, processFabric
+	)
+	lambdamcdev.replaceArtifactInConfiguration(
+		JavaPlugin.RUNTIME_ELEMENTS_CONFIGURATION_NAME, processFabric
+	)
+}
+
 val remapMojmap by tasks.registering(RemapJarTask::class) {
 	this.group = "build"
 	this.dependsOn(tasks.remapJar)
 
 	inputFile.set(tasks.remapJar.flatMap { it.archiveFile })
-	customMappings.from(mojangMappings)
+	customMappings.from(mojmap.mappingsConfiguration())
 	sourceNamespace = "intermediary"
 	targetNamespace = "named"
 	archiveClassifier = "mojmap"
 	classpath.setFrom((loom as LoomGradleExtension).getMinecraftJars(MappingsNamespace.INTERMEDIARY))
 
 	addNestedDependencies = false // Jars have already been included in the remapJar task
+
+	mojmap.setJarArtifact(this)
 }
 
 val remapTestmodMojmap by tasks.registering(RemapJarTask::class) {
@@ -176,7 +191,7 @@ val remapTestmodMojmap by tasks.registering(RemapJarTask::class) {
 	this.dependsOn(remapTestmodJar)
 
 	inputFile.set(remapTestmodJar.flatMap { it.archiveFile })
-	customMappings.from(mojangMappings)
+	customMappings.from(mojmap.mappingsConfiguration())
 	sourceNamespace = "intermediary"
 	targetNamespace = "named"
 	archiveClassifier = "testmod-mojmap"
@@ -185,7 +200,102 @@ val remapTestmodMojmap by tasks.registering(RemapJarTask::class) {
 	addNestedDependencies = false // Jars have already been included in the remapJar task
 }
 
-tasks.build.configure {
-	this.dependsOn(processFabric, remapMojmap)
+tasks.assemble.configure { this.dependsOn(processFabric, remapMojmap, remapTestmodMojmap) }
+
+val remapMojmapSources by tasks.registering(RemapSourcesJarTask::class) {
+	dependsOn(tasks.remapSourcesJar)
+
+	inputFile.set(tasks.remapSourcesJar.flatMap { it.archiveFile })
+	customMappings.from(mojmap.mappingsConfiguration())
+	sourceNamespace = "intermediary"
+	targetNamespace = "named"
+	archiveClassifier = "mojmap-sources"
+	classpath.setFrom((loom as LoomGradleExtension).getMinecraftJars(MappingsNamespace.INTERMEDIARY))
 }
+
+// Add the remapped sources artifact
+mojmap.setSourcesArtifact(remapMojmapSources)
 //endregion
+
+// Setup publishing of artifacts.
+publishing {
+	publications {
+		create<MavenPublication>(Constants.PUBLICATION_NAME) {
+			from(components["java"])
+			artifactId = Constants.NAMESPACE
+
+			pom {
+				name = Constants.PROJECT_NAME
+				description = Constants.PROJECT_DESCRIPTION
+				url = Constants.PROJECT_URL
+
+				organization {
+					name = Constants.ORG_NAME
+					url = Constants.ORG_URL
+				}
+
+				developers {
+					Constants.DEVELOPERS.forEach {
+						developer {
+							name = it.name
+							email = it.email
+						}
+					}
+				}
+
+				licenses {
+					license {
+						name = Constants.LICENSE_NAME
+						url = Constants.LICENSE_URL
+					}
+				}
+
+				scm {
+					url = Constants.GIT_URL
+					connection = Constants.GIT_CONNECTION
+					developerConnection = Constants.GIT_DEV_CONNECTION
+				}
+			}
+		}
+	}
+
+	repositories {
+		mavenLocal()
+		maven {
+			name = "BuildDirLocal"
+			url = uri("${layout.buildDirectory.get()}/repo")
+		}
+	}
+}
+
+nexusPublishing {
+	repositories {
+		val mavenCentralKey: String? by project
+		val mavenCentralSecret: String? by project
+
+		if (mavenCentralKey != null && mavenCentralSecret != null) {
+			sonatype {
+				username = mavenCentralKey
+				password = mavenCentralSecret
+
+				nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+				snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+			}
+		}
+	}
+}
+
+// Setup signing.
+signing {
+	val signingKeyId: String? by rootProject
+	val signingKey: String? by rootProject
+	val signingPassword: String? by rootProject
+	isRequired = signingKeyId != null && signingKey != null && signingPassword != null
+	useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+
+	sign(publishing.publications[Constants.PUBLICATION_NAME])
+
+	afterEvaluate {
+		tasks["sign${Constants.PUBLICATION_NAME.replaceFirstChar(Char::titlecase)}Publication"].group = "publishing"
+	}
+}

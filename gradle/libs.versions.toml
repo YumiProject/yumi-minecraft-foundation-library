@@ -10,7 +10,7 @@ yumi-commons = "1.0.0-alpha.12"
 # Gradle
 gradle-licenser = "2.1.+"
 gradle-loom = "1.11.+"
-gradle-lambdamcdev = "1.2.+"
+gradle-lambdamcdev = "1.3.+"
 gradle-nexus-publish = "2.0.0"
 gson = "2.11.0"
 
@@ -35,3 +35,4 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 licenser = { id = "dev.yumi.gradle.licenser", version.ref = "gradle-licenser" }
 loom = { id = "fabric-loom", version.ref = "gradle-loom" }
 lambdamcdev = { id = "dev.lambdaurora.mcdev", version.ref = "gradle-lambdamcdev" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradle-nexus-publish" }

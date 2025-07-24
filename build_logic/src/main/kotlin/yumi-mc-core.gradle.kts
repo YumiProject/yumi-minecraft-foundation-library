@@ -1,6 +1,5 @@
 import org.gradle.accessors.dm.LibrariesForLibs
 import yumimc.Constants
-import yumimc.Constants.mcVersion
 
 plugins {
 	id("fabric-loom")

@@ -1,0 +1,42 @@
+name: "Release"
+
+on:
+  workflow_dispatch: # Manual trigger
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Set up Java"
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: 21
+      - name: "Set up Gradle"
+        uses: gradle/actions/setup-gradle@v3
+      - name: "Gradle Build"
+        run: ./gradlew build check --stacktrace --parallel
+        env:
+          ACTIONS_REF: ${{ github.ref }}
+      - name: "Upload artifacts"
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: ./build/libs/
+
+      - name: "Gradle Publish"
+        run: ./gradlew signMavenJavaPublication --stacktrace --no-configuration-cache
+        env:
+          ACTIONS_REF: ${{ github.ref }}
+          ORG_GRADLE_PROJECT_mavenCentralKey: ${{ secrets.MAVEN_CENTRAL_PUBLISH_KEY }}
+          ORG_GRADLE_PROJECT_mavenCentralSecret: ${{ secrets.MAVEN_CENTRAL_PUBLISH_SECRET }}
+          ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.MC_SIGNING_PGP_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MC_SIGNING_PGP_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MC_SIGNING_PGP_PASSWORD }}
