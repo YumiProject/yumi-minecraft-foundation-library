@@ -184,9 +184,8 @@ val remapMojmap by tasks.registering(RemapJarTask::class) {
 	classpath.setFrom((loom as LoomGradleExtension).getMinecraftJars(MappingsNamespace.INTERMEDIARY))
 
 	addNestedDependencies = false // Jars have already been included in the remapJar task
-
-	mojmap.setJarArtifact(this)
 }
+mojmap.setJarArtifact(remapMojmap)
 
 val remapTestmodMojmap by tasks.registering(RemapJarTask::class) {
 	this.group = "build"
