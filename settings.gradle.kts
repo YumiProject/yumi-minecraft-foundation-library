@@ -1,4 +1,4 @@
-rootProject.name = "Yumi Minecraft Libraries - Foundation"
+rootProject.name = "yumi-mc-foundation"
 
 pluginManagement {
 	repositories {
