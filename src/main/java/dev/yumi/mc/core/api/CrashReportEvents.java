@@ -22,6 +22,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Provides multiple crash-report-related events,
+ * which allow to detect when a crash-report gets generated and to add custom debugging information.
+ */
 public final class CrashReportEvents {
 	/**
 	 * The crash report creation event.

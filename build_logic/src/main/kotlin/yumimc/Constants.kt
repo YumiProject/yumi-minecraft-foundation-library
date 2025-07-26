@@ -13,13 +13,13 @@ object Constants {
 
 	const val PROJECT_NAME = "Yumi Minecraft Libraries: Foundation"
 	const val PROJECT_URL = "https://github.com/YumiProject/yumi-minecraft-foundation-library"
-	const val PROJECT_DESCRIPTION = "A core library offering entrypoints and environment-related utilities."
+	const val PROJECT_DESCRIPTION = "A core library offering entrypoints and environment-related utilities to Minecraft mods."
 
 	const val ORG_NAME = "Yumi Project"
 	const val ORG_URL = "https://yumi.dev/"
 
 	val DEVELOPERS = listOf(
-		Developer("${ORG_NAME} Minecraft Libraries Development Team", "infra@yumi.dev"),
+		Developer("$ORG_NAME Minecraft Libraries Development Team", "infra@yumi.dev"),
 		Developer("LambdAurora", "email@lambdaurora.dev"),
 	)
 

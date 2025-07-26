@@ -40,6 +40,8 @@ lambdamcdev {
 		}
 		nmt {
 			fmj.copyTo(this)
+			this.withLoaderVersion("[2,)")
+			this.withDepend("minecraft", "[" + libs.versions.minecraft.get() + ",)")
 			this.withMixins("yumi_mc_core.mixins.json")
 			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiModsImpl::INSTANCE")
 		}
@@ -222,7 +224,7 @@ publishing {
 	publications {
 		create<MavenPublication>(Constants.PUBLICATION_NAME) {
 			from(components["java"])
-			artifactId = Constants.NAMESPACE
+			artifactId = "yumi-mc-foundation"
 
 			pom {
 				name = Constants.PROJECT_NAME
