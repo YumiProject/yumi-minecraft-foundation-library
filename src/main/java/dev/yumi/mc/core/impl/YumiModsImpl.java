@@ -43,8 +43,8 @@ public final class YumiModsImpl implements YumiMods, ModInitializer {
 		this.runtime = EnvironmentUtils.FABRIC ? new CurrentRuntime.FabricRuntime() : new CurrentRuntime.NeoForgeRuntime();
 
 		var initializers = List.<Supplier<Consumer<List<ExtendedModContainer>>>>of(
-				() -> FabricModContainer::init,
-				() -> NeoModContainer::init
+				() -> NeoModContainer::init,
+				() -> FabricModContainer::init
 		);
 
 		var errors = new ArrayList<Error>();
