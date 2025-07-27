@@ -8,7 +8,7 @@ object Constants {
 	const val GROUP = "dev.yumi.mc.core"
 	const val NAMESPACE = "yumi_mc_core"
 
-	const val VERSION = "1.0.0-alpha.4"
+	const val VERSION = "1.0.0-alpha.5"
 	const val JAVA_VERSION = 21
 
 	const val PROJECT_NAME = "Yumi Minecraft Libraries: Foundation"

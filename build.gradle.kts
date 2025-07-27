@@ -84,8 +84,9 @@ dependencies {
 	include(libs.yumi.commons.collections)
 	include(libs.yumi.commons.event)
 
-	modImplementation(libs.fabric.loader)
+	modCompileOnly(libs.fabric.loader)
 	compileOnly(libs.neoforge.loader)
+	modLocalRuntime(libs.fabric.loader)
 
 	"testmodImplementation"(sourceSets.main.get().output)
 }

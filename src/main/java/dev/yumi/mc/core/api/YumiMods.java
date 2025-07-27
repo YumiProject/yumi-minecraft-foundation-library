@@ -56,6 +56,13 @@ public interface YumiMods {
 	Optional<ModContainer> getMod(String id);
 
 	/**
+	 * {@return {@code true} if the given mod is loaded, or {@code false} otherwise}
+	 *
+	 * @param id the identifier of the mod
+	 */
+	boolean isModLoaded(String id);
+
+	/**
 	 * Gets all mod containers.
 	 *
 	 * @return a collection of all loaded mod containers

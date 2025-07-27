@@ -116,6 +116,11 @@ public final class YumiModsImpl implements YumiMods, ModInitializer {
 	}
 
 	@Override
+	public boolean isModLoaded(String id) {
+		return this.modsMap.containsKey(id);
+	}
+
+	@Override
 	public Collection<ModContainer> getMods() {
 		return Collections.unmodifiableList(this.mods);
 	}
