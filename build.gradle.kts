@@ -27,7 +27,7 @@ lambdamcdev {
 					.withIssues(Constants.ISSUES_URL)
 			}
 			this.withLicense(Constants.LICENSE_NAME)
-			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiModsImpl::INSTANCE")
+			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationInitializer")
 			this.withDepend("minecraft", "~1.21")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
 			this.withMixins("yumi_mc_core.mixins.json")
@@ -43,7 +43,7 @@ lambdamcdev {
 			this.withLoaderVersion("[2,)")
 			this.withDepend("minecraft", "[" + libs.versions.minecraft.get() + ",)")
 			this.withMixins("yumi_mc_core.mixins.json")
-			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiModsImpl::INSTANCE")
+			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiFoundationInitializer")
 		}
 	}
 

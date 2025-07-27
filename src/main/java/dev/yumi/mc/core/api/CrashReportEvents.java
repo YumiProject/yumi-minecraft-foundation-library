@@ -33,7 +33,7 @@ public final class CrashReportEvents {
 	 *
 	 * @see Creation
 	 */
-	public static final Event<Identifier, Creation> CREATE = YumiMods.EVENTS.create(Creation.class);
+	public static final Event<Identifier, Creation> CREATE = YumiEvents.EVENTS.create(Creation.class);
 
 	/**
 	 * The crash report system details population event.
@@ -43,7 +43,7 @@ public final class CrashReportEvents {
 	 * @see SystemReport
 	 */
 	public static final Event<Identifier, SystemDetailsPopulation> SYSTEM_DETAILS_POPULATE
-			= YumiMods.EVENTS.create(SystemDetailsPopulation.class);
+			= YumiEvents.EVENTS.create(SystemDetailsPopulation.class);
 
 	/**
 	 * The crash report entity details population event.
@@ -52,7 +52,7 @@ public final class CrashReportEvents {
 	 * @see EntityDetailsPopulation
 	 */
 	public static final Event<Identifier, EntityDetailsPopulation> ENTITY_DETAILS_POPULATE
-			= YumiMods.EVENTS.create(EntityDetailsPopulation.class);
+			= YumiEvents.EVENTS.create(EntityDetailsPopulation.class);
 
 	/**
 	 * The crash report block entity details population event.
@@ -61,7 +61,7 @@ public final class CrashReportEvents {
 	 * @see BlockEntityDetailsPopulation
 	 */
 	public static final Event<Identifier, BlockEntityDetailsPopulation> BLOCK_ENTITY_DETAILS_POPULATE
-			= YumiMods.EVENTS.create(BlockEntityDetailsPopulation.class);
+			= YumiEvents.EVENTS.create(BlockEntityDetailsPopulation.class);
 
 	/**
 	 * The crash report block details population event.
@@ -71,7 +71,7 @@ public final class CrashReportEvents {
 	 * @see BlockDetailsPopulation
 	 */
 	public static final Event<Identifier, BlockDetailsPopulation> BLOCK_DETAILS_POPULATE
-			= YumiMods.EVENTS.create(BlockDetailsPopulation.class);
+			= YumiEvents.EVENTS.create(BlockDetailsPopulation.class);
 
 	/**
 	 * The crash report level details population event.
@@ -80,7 +80,7 @@ public final class CrashReportEvents {
 	 * @see LevelDetailsPopulation
 	 */
 	public static final Event<Identifier, LevelDetailsPopulation> LEVEL_DETAILS_POPULATE
-			= YumiMods.EVENTS.create(LevelDetailsPopulation.class);
+			= YumiEvents.EVENTS.create(LevelDetailsPopulation.class);
 
 	/**
 	 * Represents the crash report creation callback interface.

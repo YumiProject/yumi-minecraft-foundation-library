@@ -8,10 +8,8 @@
 
 package dev.yumi.mc.core.api;
 
-import dev.yumi.commons.event.EventManager;
 import dev.yumi.mc.core.api.entrypoint.EntrypointContainer;
 import dev.yumi.mc.core.impl.YumiModsImpl;
-import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.nio.file.Path;
@@ -21,13 +19,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public interface YumiMods {
-	/**
-	 * Represents the Yumi event manager.
-	 *
-	 * @see dev.yumi.commons.event
-	 */
-	EventManager<Identifier> EVENTS = YumiModsImpl.INSTANCE.eventManager;
-
 	static YumiMods get() {
 		return YumiModsImpl.INSTANCE;
 	}
