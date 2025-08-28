@@ -8,8 +8,7 @@
 
 package dev.yumi.mc.core.mixin;
 
-import dev.yumi.mc.core.api.YumiMods;
-import dev.yumi.mc.core.api.entrypoint.ModInitializer;
+import dev.yumi.mc.core.impl.YumiFoundationMod;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +21,6 @@ abstract class BuiltInRegistriesMixin {
 	private static void onInitialize(CallbackInfo ci) {
 		BootstrapAccessor.invokeWrapStreams(); // We need to make this a bit early in case a mod uses System.out to print stuff.
 
-		YumiMods.get().invokeEntrypoints(ModInitializer.ENTRYPOINT_KEY, ModInitializer.class, ModInitializer::onInitialize);
+		YumiFoundationMod.initialize();
 	}
 }

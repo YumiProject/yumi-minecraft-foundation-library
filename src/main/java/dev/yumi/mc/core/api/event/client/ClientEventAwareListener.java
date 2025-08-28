@@ -8,9 +8,6 @@
 
 package dev.yumi.mc.core.api.event.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 /**
  * Represents a client-sided event callback aware of its uniquely associated event, may be used as an entrypoint.
  * <p>
@@ -22,7 +19,6 @@ import net.fabricmc.api.Environment;
  * @see dev.yumi.mc.core.api.event.server.DedicatedServerEventAwareListener
  * @see dev.yumi.mc.core.api.entrypoint Entrypoints - Registering entrypoints
  */
-@Environment(EnvType.CLIENT)
 public interface ClientEventAwareListener {
 	/**
 	 * Represents the key which this value is defined with, whose value is {@value}.

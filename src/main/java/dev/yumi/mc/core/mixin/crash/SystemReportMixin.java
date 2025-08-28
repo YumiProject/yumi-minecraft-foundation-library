@@ -9,6 +9,7 @@
 package dev.yumi.mc.core.mixin.crash;
 
 import dev.yumi.mc.core.api.CrashReportEvents;
+import dev.yumi.mc.core.impl.YumiFoundationMod;
 import net.minecraft.SystemReport;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 class SystemReportMixin {
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void yumi$onInit(CallbackInfo ci) {
-		CrashReportEvents.SYSTEM_DETAILS_POPULATE.invoker().onCrashReportSystemDetailsPopulation((SystemReport) (Object) this);
+		var $this = (SystemReport) (Object) this;
+		CrashReportEvents.SYSTEM_DETAILS_POPULATE.invoker().onCrashReportSystemDetailsPopulation($this);
+		YumiFoundationMod.populateSystemDetailsReport($this);
 	}
 }

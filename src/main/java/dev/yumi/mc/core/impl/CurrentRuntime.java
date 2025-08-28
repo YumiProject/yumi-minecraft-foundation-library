@@ -8,6 +8,8 @@
 
 package dev.yumi.mc.core.impl;
 
+import dev.yumi.mc.core.impl.neoforge.DeferredRegisterUndeferrer;
+import dev.yumi.mc.core.mixin.neoforge.NeoForgeModAccessor;
 import net.fabricmc.loader.api.FabricLoader;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
@@ -20,6 +22,8 @@ interface CurrentRuntime {
 	Path getGameDirectory();
 
 	Path getConfigDirectory();
+
+	default void init() {}
 
 	class FabricRuntime implements CurrentRuntime {
 		@Override
@@ -52,6 +56,14 @@ interface CurrentRuntime {
 		@Override
 		public Path getConfigDirectory() {
 			return FMLPaths.CONFIGDIR.get();
+		}
+
+		@Override
+		public void init() {
+			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getATTRIBUTES()).yumi$registerNow();
+			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getCOMMAND_ARGUMENT_TYPES()).yumi$registerNow();
+			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getENTITY_PREDICATE_CODECS()).yumi$registerNow();
+			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getITEM_SUB_PREDICATES()).yumi$registerNow();
 		}
 	}
 }

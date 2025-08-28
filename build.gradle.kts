@@ -13,6 +13,7 @@ plugins {
 	signing
 }
 
+version = version.toString() + "+${Constants.mcVersion()}"
 base.archivesName.set(project.property("archives_base_name") as String)
 
 lambdamcdev {
@@ -27,10 +28,10 @@ lambdamcdev {
 					.withIssues(Constants.ISSUES_URL)
 			}
 			this.withLicense(Constants.LICENSE_NAME)
-			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationInitializer")
+			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationMod")
 			this.withDepend("minecraft", "~1.21")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
-			this.withMixins("yumi_mc_core.mixins.json")
+			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
 			this.withModMenu {
 				it.withBadges("library")
 				it.withParent("yumi_mc_libraries", "Yumi Minecraft Libraries") { parent ->
@@ -42,8 +43,8 @@ lambdamcdev {
 			fmj.copyTo(this)
 			this.withLoaderVersion("[2,)")
 			this.withDepend("minecraft", "[" + libs.versions.minecraft.get() + ",)")
-			this.withMixins("yumi_mc_core.mixins.json")
-			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiFoundationInitializer")
+			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
+			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiFoundationMod")
 		}
 	}
 
@@ -68,6 +69,16 @@ repositories {
 val testmod: SourceSet by sourceSets.creating {
 	this.compileClasspath += sourceSets.main.get().compileClasspath
 	this.runtimeClasspath += sourceSets.main.get().runtimeClasspath
+}
+
+afterEvaluate {
+	val shims: SourceSet by sourceSets.creating {
+		this.compileClasspath += configurations["minecraftNamedCompile"]
+	}
+
+	dependencies {
+		compileOnly(shims.output)
+	}
 }
 
 dependencies {
@@ -148,6 +159,7 @@ tasks.build.get().dependsOn(remapTestmodJar)
 
 license {
 	rule(rootProject.file("codeformat/HEADER"))
+	excludeSourceSet("shims")
 }
 
 //region Mojmap

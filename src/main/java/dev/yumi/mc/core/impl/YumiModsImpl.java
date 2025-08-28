@@ -26,23 +26,35 @@ import java.util.function.Supplier;
 @ApiStatus.Internal
 public final class YumiModsImpl implements YumiMods {
 	public static final YumiModsImpl INSTANCE = new YumiModsImpl();
+	final List<CurrentRuntime> runtimes;
 	private final CurrentRuntime runtime;
 	private final Map<String, ExtendedModContainer> modsMap = new HashMap<>();
 	private final List<ExtendedModContainer> mods = new ArrayList<>();
 	private final EntrypointStorage entrypointStorage;
 
 	public YumiModsImpl() {
-		this.runtime = EnvironmentUtils.FABRIC ? new CurrentRuntime.FabricRuntime() : new CurrentRuntime.NeoForgeRuntime();
+		var runtimes = new ArrayList<CurrentRuntime>();
+		if (EnvironmentUtils.FABRIC) {
+			runtimes.add(new CurrentRuntime.FabricRuntime());
+		}
+		if (EnvironmentUtils.NEOFORGE) {
+			runtimes.add(new CurrentRuntime.NeoForgeRuntime());
+		}
+		this.runtimes = List.copyOf(runtimes);
+
+		this.runtime = this.runtimes.getFirst();
 
 		var initializers = List.<Supplier<Consumer<List<ExtendedModContainer>>>>of(
 				() -> NeoModContainer::init,
 				() -> FabricModContainer::init
 		);
 
+		var mods = new ArrayList<ExtendedModContainer>();
+
 		var errors = new ArrayList<Error>();
 		for (var initializer : initializers) {
 			try {
-				initializer.get().accept(this.mods);
+				initializer.get().accept(mods);
 			} catch (LinkageError e) {
 				errors.add(e);
 			}
@@ -56,9 +68,14 @@ public final class YumiModsImpl implements YumiMods {
 			throw new IllegalStateException("Failed to initialize ModManager: failed to find any mod loader.", error);
 		}
 
-		for (var mod : this.mods) {
-			this.modsMap.put(mod.id(), mod);
+		var directModsMap = new HashMap<String, ExtendedModContainer>();
+		for (var mod : mods) {
+			directModsMap.put(mod.id(), mod);
+		}
 
+		this.mods.addAll(directModsMap.values());
+		this.modsMap.putAll(directModsMap);
+		for (var mod : directModsMap.values()) {
 			for (var provided : mod.getProvidedIds()) {
 				this.modsMap.put(provided, mod);
 			}

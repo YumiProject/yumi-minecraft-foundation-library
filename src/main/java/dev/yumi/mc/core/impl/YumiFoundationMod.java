@@ -8,26 +8,43 @@
 
 package dev.yumi.mc.core.impl;
 
+import com.mojang.logging.LogUtils;
 import dev.yumi.mc.core.api.CrashReportEvents;
 import dev.yumi.mc.core.api.ModContainer;
 import dev.yumi.mc.core.api.YumiEvents;
 import dev.yumi.mc.core.api.YumiMods;
 import dev.yumi.mc.core.api.entrypoint.ModInitializer;
+import net.minecraft.SystemReport;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
 @ApiStatus.Internal
-public final class YumiFoundationInitializer implements ModInitializer {
+public final class YumiFoundationMod implements ModInitializer {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Identifier SYSTEM_DETAILS_POPULATION_PHASE = Identifier.of(
 			"yumi", "populate_system_details"
 	);
 
 	@Override
 	public void onInitialize(ModContainer mod) {
+		CrashReportEvents.SYSTEM_DETAILS_POPULATE.addPhaseOrdering(
+				CrashReportEvents.SYSTEM_DETAILS_POPULATE.defaultPhaseId(),
+				SYSTEM_DETAILS_POPULATION_PHASE
+		);
+		CrashReportEvents.SYSTEM_DETAILS_POPULATE.register(SYSTEM_DETAILS_POPULATION_PHASE, details ->
+				details.setDetail("Yumi MC Core", mod.getVersionString())
+		);
+	}
+
+	public static void initialize() {
+		LOGGER.info("Initializing mods (entrypoint {})...", ModInitializer.ENTRYPOINT_KEY);
+		YumiModsImpl.INSTANCE.runtimes.forEach(CurrentRuntime::init);
+
 		YumiEvents.EVENTS.getCreationEvent().register((manager, event) -> {
 			for (var target : EventSideTarget.VALUES) {
 				// Search if the callback qualifies is unique to this event.
@@ -48,30 +65,24 @@ public final class YumiFoundationInitializer implements ModInitializer {
 			}
 		});
 
-		CrashReportEvents.SYSTEM_DETAILS_POPULATE.addPhaseOrdering(
-				CrashReportEvents.SYSTEM_DETAILS_POPULATE.defaultPhaseId(),
-				SYSTEM_DETAILS_POPULATION_PHASE
-		);
-		CrashReportEvents.SYSTEM_DETAILS_POPULATE.register(SYSTEM_DETAILS_POPULATION_PHASE, details -> {
-			details.setDetail("Yumi MC Core", mod.getVersionString());
-
-			if (YumiMods.get().getMod("fabric-crash-report-info-v1").isEmpty()
-					&& YumiMods.get().getMod("neoforge").isEmpty()
-			) {
-				details.setDetail("Mods", () -> {
-					var builder = new StringBuilder();
-					this.populateMods(builder, 2,
-							YumiMods.get().getMods().stream()
-									.filter(entry -> entry.getContainingMod().isEmpty())
-									.toList()
-					);
-					return builder.toString();
-				});
-			}
-		});
+		YumiModsImpl.INSTANCE.invokeEntrypoints(ModInitializer.ENTRYPOINT_KEY, ModInitializer.class, ModInitializer::onInitialize);
 	}
 
-	private void populateMods(StringBuilder builder, int depth, Collection<ModContainer> mods) {
+	public static void populateSystemDetailsReport(SystemReport details) {
+		if (YumiMods.get().getMod("fabric-crash-report-info-v1").isEmpty()) {
+			details.setDetail("Mods", () -> {
+				var builder = new StringBuilder();
+				populateMods(builder, 2,
+						YumiMods.get().getMods().stream()
+								.filter(entry -> entry.getContainingMod().isEmpty())
+								.toList()
+				);
+				return builder.toString();
+			});
+		}
+	}
+
+	private static void populateMods(StringBuilder builder, int depth, Collection<ModContainer> mods) {
 		for (var mod : mods.stream().sorted(Comparator.comparing(ModContainer::id)).toList()) {
 			builder.append('\n');
 			builder.append("\t".repeat(depth));
@@ -79,7 +90,7 @@ public final class YumiFoundationInitializer implements ModInitializer {
 
 			var contained = mod.getContainedMods();
 			if (!contained.isEmpty()) {
-				this.populateMods(builder, depth + 1, contained);
+				populateMods(builder, depth + 1, contained);
 			}
 		}
 	}

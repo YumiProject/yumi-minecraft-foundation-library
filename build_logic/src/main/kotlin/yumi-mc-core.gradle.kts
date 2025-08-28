@@ -11,8 +11,6 @@ plugins {
 val libs = the<LibrariesForLibs>()
 Constants.finalizeInit(libs)
 
-group = Constants.GROUP
-version = "${Constants.VERSION}+${Constants.mcVersion()}"
 lambdamcdev.namespace = Constants.NAMESPACE
 
 repositories {

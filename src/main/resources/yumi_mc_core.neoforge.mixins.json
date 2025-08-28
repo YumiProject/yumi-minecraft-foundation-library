@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "dev.yumi.mc.core.mixin.neoforge",
+	"plugin": "dev.yumi.mc.core.impl.neoforge.YumiFoundationNeoMixinPlugin",
+	"compatibilityLevel": "JAVA_21",
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"mixins": [
+		"DeferredRegisterMixin",
+		"NeoForgeModAccessor",
+		"RegisterEventAccessor"
+	]
+}
