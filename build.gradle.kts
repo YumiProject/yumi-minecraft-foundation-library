@@ -31,6 +31,7 @@ lambdamcdev {
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationMod")
 			this.withDepend("minecraft", "~1.21")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
+			this.withDepend("yumi_commons_event", "~${libs.versions.yumi.commons.get()}")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
 			this.withModMenu {
 				it.withBadges("library")

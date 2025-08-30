@@ -5,7 +5,7 @@ neoforge-loader = "7.0.11"
 mappings-yalmm = "5"
 
 # Dependencies
-yumi-commons = "1.0.0-beta.1"
+yumi-commons = "1.0.0-beta.3"
 
 # Gradle
 gradle-licenser = "2.1.+"
