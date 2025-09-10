@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Stack;
 
 @ApiStatus.Internal
 public final class YumiFoundationMod implements ModInitializer {
@@ -75,22 +76,29 @@ public final class YumiFoundationMod implements ModInitializer {
 				populateMods(builder, 2,
 						YumiMods.get().getMods().stream()
 								.filter(entry -> entry.getContainingMod().isEmpty())
-								.toList()
+								.toList(),
+						new Stack<>()
 				);
 				return builder.toString();
 			});
 		}
 	}
 
-	private static void populateMods(StringBuilder builder, int depth, Collection<ModContainer> mods) {
+	private static void populateMods(
+			StringBuilder builder, int depth, Collection<ModContainer> mods, Stack<ModContainer> parents
+	) {
 		for (var mod : mods.stream().sorted(Comparator.comparing(ModContainer::id)).toList()) {
 			builder.append('\n');
 			builder.append("\t".repeat(depth));
 			builder.append(mod.id()).append(": ").append(mod.getName()).append(" v").append(mod.getVersionString());
 
-			var contained = mod.getContainedMods();
-			if (!contained.isEmpty()) {
-				populateMods(builder, depth + 1, contained);
+			if (!parents.contains(mod)) {
+				parents.push(mod);
+				var contained = mod.getContainedMods();
+				if (!contained.isEmpty()) {
+					populateMods(builder, depth + 1, contained, parents);
+				}
+				parents.pop();
 			}
 		}
 	}
