@@ -19,10 +19,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ApiStatus.Internal
@@ -107,6 +104,6 @@ public final class NeoModContainer extends AbstractModContainer {
 				.filter(entry -> entry.value != null)
 				.collect(Collectors.toMap(Entry::key, Entry::value));
 
-		return new ManifestCustomValue.ObjectValue(Map.copyOf(map));
+		return new ManifestCustomValue.ObjectValue(Collections.unmodifiableMap(map));
 	}
 }

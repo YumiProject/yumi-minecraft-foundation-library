@@ -16,6 +16,7 @@
 			"yumi:dedicated_server_init": [
 				"dev.yumi.mc.core.test.server.TestDedicatedServerModInitializer"
 			]
-		}
+		},
+		"yumi:null_test": null
 	}
 }

@@ -101,7 +101,7 @@ public final class FabricModContainer extends AbstractModContainer {
 				for (var entry : customValue.getAsObject()) {
 					map.put(entry.getKey(), mapCustomValue(entry.getValue()));
 				}
-				yield new ManifestCustomValue.ObjectValue(Map.copyOf(map));
+				yield new ManifestCustomValue.ObjectValue(Collections.unmodifiableMap(map));
 			}
 			case ARRAY -> {
 				var list = new ArrayList<ManifestCustomValue<?>>();
