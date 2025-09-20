@@ -9,10 +9,10 @@
 package dev.yumi.mc.core.impl;
 
 import dev.yumi.mc.core.impl.neoforge.DeferredRegisterUndeferrer;
-import dev.yumi.mc.core.mixin.neoforge.NeoForgeModAccessor;
 import net.fabricmc.loader.api.FabricLoader;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.nio.file.Path;
 
@@ -60,10 +60,17 @@ interface CurrentRuntime {
 
 		@Override
 		public void init() {
-			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getATTRIBUTES()).yumi$registerNow();
-			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getCOMMAND_ARGUMENT_TYPES()).yumi$registerNow();
-			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getENTITY_PREDICATE_CODECS()).yumi$registerNow();
-			((DeferredRegisterUndeferrer) NeoForgeModAccessor.getITEM_SUB_PREDICATES()).yumi$registerNow();
+			for (var field : NeoForgeMod.class.getDeclaredFields()) {
+				if (field.getType().isAssignableFrom(DeferredRegisterUndeferrer.class)) {
+					field.setAccessible(true);
+					try {
+						var register = (DeferredRegisterUndeferrer) field.get(null);
+						register.yumi$registerNow();
+					} catch (IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
 		}
 	}
 }

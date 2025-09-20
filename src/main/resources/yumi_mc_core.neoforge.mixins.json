@@ -8,7 +8,6 @@
 	},
 	"mixins": [
 		"DeferredRegisterMixin",
-		"NeoForgeModAccessor",
 		"RegisterEventAccessor"
 	]
 }
