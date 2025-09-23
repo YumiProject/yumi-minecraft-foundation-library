@@ -47,18 +47,21 @@ final class CommonEntrypointStorage implements EntrypointStorage {
 	private final Map<String, List<Entry>> entrypoints = new HashMap<>();
 
 	public CommonEntrypointStorage(List<ExtendedModContainer> mods) {
+		final var collectingEntrypoints = new HashMap<String, Map<String, Entry>>();
+
 		for (var mod : mods) {
 			for (var entry : mod.getEntrypoints().entrySet()) {
-				this.collectEntrypointsForKey(mod, entry.getKey(), entry.getValue());
+				var storage = collectingEntrypoints.computeIfAbsent(entry.getKey(), k -> new HashMap<>());
+
+				for (var candidate : entry.getValue()) {
+					storage.put(candidate.value(), new Entry(mod, candidate));
+				}
 			}
 		}
-	}
 
-	private void collectEntrypointsForKey(ModContainer mod, String key, List<EntrypointCandidate> candidates) {
-		var storage = this.entrypoints.computeIfAbsent(key, k -> new ArrayList<>());
-		for (var candidate : candidates) {
-			storage.add(new Entry(mod, candidate));
-		}
+		collectingEntrypoints.forEach((key, entries) -> {
+			entrypoints.put(key, entries.values().stream().toList());
+		});
 	}
 
 	@Override
