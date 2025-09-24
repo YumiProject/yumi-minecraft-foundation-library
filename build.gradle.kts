@@ -82,6 +82,12 @@ afterEvaluate {
 	}
 }
 
+val mojmap = lambdamcdev.setupMojmapRemapping()
+
+configurations.getByName("mojmapApi") {
+	this.extendsFrom(configurations["api"])
+}
+
 dependencies {
 	@Suppress("UnstableApiUsage")
 	mappings(loom.layered {
@@ -89,9 +95,21 @@ dependencies {
 		mappings("dev.lambdaurora:yalmm:${Constants.mcVersion()}+build.${libs.versions.mappings.yalmm.get()}")
 	})
 
-	api(libs.yumi.commons.core)
-	api(libs.yumi.commons.collections)
-	api(libs.yumi.commons.event)
+	api(libs.yumi.commons.core) {
+		// Exclude Minecraft and loader-provided libraries.
+		exclude(group = "org.slf4j")
+		exclude(group = "org.ow2.asm")
+	}
+	api(libs.yumi.commons.collections) {
+		// Exclude Minecraft and loader-provided libraries.
+		exclude(group = "org.slf4j")
+		exclude(group = "org.ow2.asm")
+	}
+	api(libs.yumi.commons.event) {
+		// Exclude Minecraft and loader-provided libraries.
+		exclude(group = "org.slf4j")
+		exclude(group = "org.ow2.asm")
+	}
 	include(libs.yumi.commons.core)
 	include(libs.yumi.commons.collections)
 	include(libs.yumi.commons.event)
@@ -164,8 +182,6 @@ license {
 }
 
 //region Mojmap
-val mojmap = lambdamcdev.setupMojmapRemapping()
-
 tasks.remapJar.configure {
 	this.archiveClassifier = "unprocessed"
 	this.destinationDirectory = layout.buildDirectory.map { directory -> directory.dir("devlibs") }
@@ -186,49 +202,18 @@ afterEvaluate {
 	)
 }
 
-val remapMojmap by tasks.registering(RemapJarTask::class) {
-	this.group = "build"
-	this.dependsOn(tasks.remapJar)
-
-	inputFile.set(tasks.remapJar.flatMap { it.archiveFile })
-	customMappings.from(mojmap.mappingsConfiguration())
-	sourceNamespace = "intermediary"
-	targetNamespace = "named"
-	archiveClassifier = "mojmap"
-	classpath.setFrom((loom as LoomGradleExtension).getMinecraftJars(MappingsNamespace.INTERMEDIARY))
-
-	addNestedDependencies = false // Jars have already been included in the remapJar task
-}
+val remapMojmap = mojmap.registerRemap(tasks.remapJar) {}
 mojmap.setJarArtifact(remapMojmap)
 
-val remapTestmodMojmap by tasks.registering(RemapJarTask::class) {
-	this.group = "build"
+val remapTestmodMojmap = mojmap.registerRemap("remapTestmodJarToMojmap") {
 	this.dependsOn(remapTestmodJar)
-
-	inputFile.set(remapTestmodJar.flatMap { it.archiveFile })
-	customMappings.from(mojmap.mappingsConfiguration())
-	sourceNamespace = "intermediary"
-	targetNamespace = "named"
-	archiveClassifier = "testmod-mojmap"
-	classpath.setFrom((loom as LoomGradleExtension).getMinecraftJars(MappingsNamespace.INTERMEDIARY))
-
-	addNestedDependencies = false // Jars have already been included in the remapJar task
+	this.inputFile.set(remapTestmodJar.flatMap { it.archiveFile })
+	this.archiveClassifier = "testmod-mojmap"
 }
 
 tasks.assemble.configure { this.dependsOn(processFabric, remapMojmap, remapTestmodMojmap) }
 
-val remapMojmapSources by tasks.registering(RemapSourcesJarTask::class) {
-	dependsOn(tasks.remapSourcesJar)
-
-	inputFile.set(tasks.remapSourcesJar.flatMap { it.archiveFile })
-	customMappings.from(mojmap.mappingsConfiguration())
-	sourceNamespace = "intermediary"
-	targetNamespace = "named"
-	archiveClassifier = "mojmap-sources"
-	classpath.setFrom((loom as LoomGradleExtension).getMinecraftJars(MappingsNamespace.INTERMEDIARY))
-}
-
-// Add the remapped sources artifact
+val remapMojmapSources = mojmap.registerSourcesRemap(tasks.remapSourcesJar) {}
 mojmap.setSourcesArtifact(remapMojmapSources)
 //endregion
 
