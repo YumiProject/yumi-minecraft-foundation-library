@@ -19,8 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class BuiltInRegistriesMixin {
 	@Inject(method = "bootstrap", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"))
 	private static void onInitialize(CallbackInfo ci) {
-		BootstrapAccessor.invokeWrapStreams(); // We need to make this a bit early in case a mod uses System.out to print stuff.
-
 		YumiFoundationMod.initialize();
 	}
 }
