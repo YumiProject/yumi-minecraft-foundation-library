@@ -11,16 +11,17 @@ package dev.yumi.mc.core.impl.mod;
 import com.electronwill.nightconfig.core.Config;
 import dev.yumi.mc.core.api.ModContainer;
 import dev.yumi.mc.core.api.metadata.ManifestCustomValue;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ApiStatus.Internal
 public final class NeoModContainer extends AbstractModContainer {
@@ -49,18 +50,12 @@ public final class NeoModContainer extends AbstractModContainer {
 
 	@Override
 	public @NotNull Optional<Path> findPath(String first, String... more) {
-		var pathParts = new String[more.length + 1];
-		pathParts[0] = first;
-		System.arraycopy(more, 0, pathParts, 1, more.length);
+		var path = Stream.concat(Stream.of(first), Arrays.stream(more))
+				.collect(Collectors.joining("/"));
 
-		var path = this.modInfo.getOwningFile().getFile().findResource(pathParts);
-		if (path == null) {
-			return Optional.empty();
-		} else if (!Files.exists(path)) {
-			return Optional.empty();
-		}
-
-		return Optional.of(path);
+		return this.modInfo.getOwningFile().getFile().getContents()
+				.findFile(path)
+				.map(Path::of);
 	}
 
 	@Override
@@ -81,7 +76,9 @@ public final class NeoModContainer extends AbstractModContainer {
 	public static void init(List<ExtendedModContainer> mods) {
 		// Do not use ModList as early initialization will fail.
 		// Apparently LoadingModList is always constructed fully populated and ModList only gets a copy of the same data.
-		LoadingModList.get().getMods().forEach(mod -> mods.add(new NeoModContainer(mod)));
+		FMLLoader.getCurrent().getLoadingModList()
+				.getMods()
+				.forEach(mod -> mods.add(new NeoModContainer(mod)));
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})

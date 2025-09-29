@@ -45,7 +45,7 @@ interface CurrentRuntime {
 	class NeoForgeRuntime implements CurrentRuntime {
 		@Override
 		public boolean isDevelopmentEnvironment() {
-			return !FMLEnvironment.production;
+			return !FMLEnvironment.isProduction();
 		}
 
 		@Override
