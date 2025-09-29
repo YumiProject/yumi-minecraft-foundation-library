@@ -1,7 +1,5 @@
-import net.fabricmc.loom.LoomGradleExtension
-import net.fabricmc.loom.api.mappings.layered.MappingsNamespace
+import dev.lambdaurora.mcdev.api.McVersionLookup
 import net.fabricmc.loom.task.RemapJarTask
-import net.fabricmc.loom.task.RemapSourcesJarTask
 import yumimc.Constants
 import yumimc.task.FabricTransformJar
 
@@ -13,7 +11,7 @@ plugins {
 	signing
 }
 
-version = version.toString() + "+${Constants.mcVersion()}"
+version = "${version}+${McVersionLookup.getVersionTag(Constants.mcVersion())}"
 base.archivesName.set(project.property("archives_base_name") as String)
 
 lambdamcdev {
@@ -43,7 +41,7 @@ lambdamcdev {
 		nmt {
 			fmj.copyTo(this)
 			this.withLoaderVersion("[2,)")
-			this.withDepend("minecraft", "[" + libs.versions.minecraft.get() + ",)")
+			this.withDepend("minecraft", "[${libs.versions.minecraft.get()},)")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
 			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiFoundationMod")
 		}
@@ -141,16 +139,20 @@ loom {
 }
 
 tasks.jar {
+	inputs.property("archivesName", base.archivesName)
+
 	from("LICENSE") {
-		rename { "${it}_${base.archivesName.get()}" }
+		rename { "${it}_${inputs.properties["archivesName"]}" }
 	}
 }
 
 tasks.javadoc {
-	source = source.filter {
-		!it.startsWith(project.file("src/main/java/dev/yumi/mc/core/mixin"))
-				&& !it.startsWith(project.file("src/main/java/dev/yumi/mc/core/impl"))
-	}.asFileTree
+	val exclude = listOf(
+		project.file("src/main/java/dev/yumi/mc/core/impl"),
+		project.file("src/main/java/dev/yumi/mc/core/mixin")
+	)
+
+	source = source.filter { sourceIt -> !exclude.any { sourceIt.startsWith(it) } }.asFileTree
 	options {
 		this as StandardJavadocDocletOptions
 
