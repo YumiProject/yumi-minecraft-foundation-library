@@ -114,7 +114,6 @@ dependencies {
 
 	modCompileOnly(libs.fabric.loader)
 	compileOnly(libs.neoforge.loader)
-	compileOnly(libs.neoforge.securejarhandler)
 	modLocalRuntime(libs.fabric.loader)
 
 	"testmodImplementation"(sourceSets.main.get().output)

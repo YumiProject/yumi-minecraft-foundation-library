@@ -9,28 +9,37 @@
 package dev.yumi.mc.core.impl.mod;
 
 import com.electronwill.nightconfig.core.Config;
+import com.google.common.base.Suppliers;
 import dev.yumi.mc.core.api.ModContainer;
 import dev.yumi.mc.core.api.metadata.ManifestCustomValue;
+import dev.yumi.mc.core.impl.neoforge.NeoForgeFileSystem;
+import dev.yumi.mc.core.impl.neoforge.NeoForgeFileSystemProvider;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @ApiStatus.Internal
 public final class NeoModContainer extends AbstractModContainer {
 	private final IModInfo modInfo;
+	private final Supplier<NeoForgeFileSystem> fileSystem;
 
 	public NeoModContainer(IModInfo modInfo) {
 		super(mapObjectCustomValue(modInfo.getModProperties()));
 		this.modInfo = modInfo;
 		this.readEntrypoints();
+		this.fileSystem = Suppliers.memoize(() -> new NeoForgeFileSystem(
+				NeoForgeFileSystemProvider.INSTANCE,
+				this.id(),
+				modInfo.getOwningFile().getFile().getContents()
+		));
 	}
 
 	@Override
@@ -50,12 +59,13 @@ public final class NeoModContainer extends AbstractModContainer {
 
 	@Override
 	public @NotNull Optional<Path> findPath(String first, String... more) {
-		var path = Stream.concat(Stream.of(first), Arrays.stream(more))
-				.collect(Collectors.joining("/"));
+		var path = this.fileSystem.get().getPath(first, more).toAbsolutePath();
 
-		return this.modInfo.getOwningFile().getFile().getContents()
-				.findFile(path)
-				.map(Path::of);
+		if (Files.exists(path)) {
+			return Optional.of(path);
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	@Override
