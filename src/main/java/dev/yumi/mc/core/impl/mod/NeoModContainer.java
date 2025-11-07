@@ -17,14 +17,13 @@ import dev.yumi.mc.core.impl.neoforge.NeoForgeFileSystemProvider;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @ApiStatus.Internal
 public final class NeoModContainer extends AbstractModContainer {
@@ -43,22 +42,22 @@ public final class NeoModContainer extends AbstractModContainer {
 	}
 
 	@Override
-	public @NotNull String id() {
+	public String id() {
 		return this.modInfo.getModId();
 	}
 
 	@Override
-	public @NotNull String getName() {
+	public String getName() {
 		return this.modInfo.getDisplayName();
 	}
 
 	@Override
-	public @NotNull String getVersionString() {
+	public String getVersionString() {
 		return this.modInfo.getVersion().toString();
 	}
 
 	@Override
-	public @NotNull Optional<Path> findPath(String first, String... more) {
+	public Optional<Path> findPath(String first, String... more) {
 		var path = this.fileSystem.get().getPath(first, more).toAbsolutePath();
 
 		if (Files.exists(path)) {
@@ -69,7 +68,7 @@ public final class NeoModContainer extends AbstractModContainer {
 	}
 
 	@Override
-	public @NotNull Optional<ModContainer> getContainingMod() {
+	public Optional<ModContainer> getContainingMod() {
 		return Optional.empty();
 	}
 
@@ -92,7 +91,7 @@ public final class NeoModContainer extends AbstractModContainer {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private static ManifestCustomValue<?> mapCustomValue(Object value) {
+	private static @Nullable ManifestCustomValue<?> mapCustomValue(Object value) {
 		return switch (value) {
 			case Config object -> mapObjectCustomValue(object.valueMap());
 			case Map map -> mapObjectCustomValue(map);
@@ -105,12 +104,16 @@ public final class NeoModContainer extends AbstractModContainer {
 	}
 
 	private static ManifestCustomValue.ObjectValue mapObjectCustomValue(Map<String, Object> value) {
-		record Entry(String key, ManifestCustomValue<?> value) {}
-		Map<String, ManifestCustomValue<?>> map = value.entrySet().stream()
-				.map(entry -> new Entry(entry.getKey(), mapCustomValue(entry.getValue())))
-				.filter(entry -> entry.value != null)
-				.collect(Collectors.toMap(Entry::key, Entry::value));
+		var map = new HashMap<String, ManifestCustomValue<?>>();
 
-		return new ManifestCustomValue.ObjectValue(Collections.unmodifiableMap(map));
+		for (var entry : value.entrySet()) {
+			var mappedValue = mapCustomValue(entry.getValue());
+
+			if (mappedValue != null) {
+				map.put(entry.getKey(), mappedValue);
+			}
+		}
+
+		return new ManifestCustomValue.ObjectValue(Map.copyOf(map));
 	}
 }

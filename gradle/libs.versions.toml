@@ -1,16 +1,17 @@
 [versions]
-minecraft = "1.21.9"
+minecraft = "1.21.10"
 fabric-loader = "0.17.2"
 neoforge-loader = "10.0.18"
-mappings-yalmm = "8"
+mappings-yalmm = "2"
 
 # Dependencies
-yumi-commons = "1.0.0-beta.5"
+jspecify = "1.0.0"
+yumi-commons = "1.0.0"
 
 # Gradle
 gradle-licenser = "2.1.+"
-gradle-loom = "1.11.+"
-gradle-lambdamcdev = "1.6.0"
+gradle-loom = "1.13.+"
+gradle-lambdamcdev = "1.8.+"
 gradle-nexus-publish = "2.0.0"
 gson = "2.11.0"
 
@@ -20,6 +21,7 @@ fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-l
 neoforge-loader = { module = "net.neoforged.fancymodloader:loader", version.ref = "neoforge-loader" }
 
 # Dependencies
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 yumi-commons-core = { module = "dev.yumi.commons:yumi-commons-core", version.ref = "yumi-commons" }
 yumi-commons-collections = { module = "dev.yumi.commons:yumi-commons-collections", version.ref = "yumi-commons" }
 yumi-commons-event = { module = "dev.yumi.commons:yumi-commons-event", version.ref = "yumi-commons" }

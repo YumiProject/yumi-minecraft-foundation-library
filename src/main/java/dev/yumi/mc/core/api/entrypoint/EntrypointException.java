@@ -9,7 +9,6 @@
 package dev.yumi.mc.core.api.entrypoint;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents an exception that arises when obtaining entrypoints.
@@ -36,7 +35,7 @@ public class EntrypointException extends RuntimeException {
 	/**
 	 * {@return the entrypoint key which caused this exception}
 	 */
-	public @NotNull String key() {
+	public String key() {
 		return this.key;
 	}
 }

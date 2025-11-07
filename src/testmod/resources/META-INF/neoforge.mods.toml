@@ -23,6 +23,6 @@ ordering = "NONE"
 side = "CLIENT"
 
 [modproperties.yumi_mc_core_testmod."yumi:entrypoints"]
-"yumi:init" = "dev.yumi.mc.core.test.TestModInitializer"
+"yumi:init" = ["dev.yumi.mc.core.test.TestModInitializer", "dev.yumi.mc.core.test.ConstructorTest"]
 "yumi:client_init" = "dev.yumi.mc.core.test.client.TestClientModInitializer"
 "yumi:dedicated_server_init" = "dev.yumi.mc.core.test.server.TestDedicatedServerModInitializer"

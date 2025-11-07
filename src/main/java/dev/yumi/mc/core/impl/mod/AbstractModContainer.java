@@ -12,12 +12,12 @@ import com.mojang.logging.LogUtils;
 import dev.yumi.mc.core.api.metadata.ManifestCustomValue;
 import dev.yumi.mc.core.impl.entrypoint.EntrypointCandidate;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @ApiStatus.Internal
 abstract class AbstractModContainer implements ExtendedModContainer {
@@ -44,12 +44,16 @@ abstract class AbstractModContainer implements ExtendedModContainer {
 		map.forEach(this::readEntrypoints);
 	}
 
-	private void readEntrypoints(String key, ManifestCustomValue<?> data) {
+	private void readEntrypoints(String key, @Nullable ManifestCustomValue<?> data) {
 		if (data instanceof ManifestCustomValue.ArrayValue(var rawEntrypoints)) {
 			this.entrypoints.put(key,
 					rawEntrypoints.stream()
-							.map(entry -> this.readEntrypoint(key, entry))
-							.filter(Objects::nonNull)
+							.<EntrypointCandidate>mapMulti((entry, consumer) -> {
+								var candidate = this.readEntrypoint(key, entry);
+								if (candidate != null) {
+									consumer.accept(candidate);
+								}
+							})
 							.toList()
 			);
 		} else {
@@ -60,7 +64,7 @@ abstract class AbstractModContainer implements ExtendedModContainer {
 		}
 	}
 
-	private EntrypointCandidate readEntrypoint(String key, ManifestCustomValue<?> data) {
+	private @Nullable EntrypointCandidate readEntrypoint(String key, @Nullable ManifestCustomValue<?> data) {
 		return switch (data) {
 			case ManifestCustomValue.ObjectValue object -> {
 				var value = object.get("value");
@@ -75,7 +79,7 @@ abstract class AbstractModContainer implements ExtendedModContainer {
 				yield new EntrypointCandidate(string);
 			}
 			case ManifestCustomValue.StringValue(var string) -> new EntrypointCandidate(string);
-			default -> {
+			case null, default -> {
 				LOGGER.warn("Yumi-managed entrypoint {} of mod {} is not valid.", key, this.id());
 				yield null;
 			}

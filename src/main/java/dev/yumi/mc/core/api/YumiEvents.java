@@ -21,7 +21,7 @@ public final class YumiEvents {
 	 * @see dev.yumi.commons.event
 	 */
 	public static final EventManager<Identifier> EVENTS = new EventManager<>(
-			Identifier.of("yumi", "default"),
+			Identifier.fromNamespaceAndPath("yumi", "default"),
 			Identifier::parse
 	);
 

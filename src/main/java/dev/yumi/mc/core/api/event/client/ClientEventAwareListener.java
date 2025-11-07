@@ -8,6 +8,8 @@
 
 package dev.yumi.mc.core.api.event.client;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Represents a client-sided event callback aware of its uniquely associated event, may be used as an entrypoint.
  * <p>
@@ -19,6 +21,7 @@ package dev.yumi.mc.core.api.event.client;
  * @see dev.yumi.mc.core.api.event.server.DedicatedServerEventAwareListener
  * @see dev.yumi.mc.core.api.entrypoint Entrypoints - Registering entrypoints
  */
+@NullMarked
 public interface ClientEventAwareListener {
 	/**
 	 * Represents the key which this value is defined with, whose value is {@value}.

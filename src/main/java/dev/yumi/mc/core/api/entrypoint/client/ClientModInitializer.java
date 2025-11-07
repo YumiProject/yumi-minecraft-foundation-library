@@ -9,6 +9,7 @@
 package dev.yumi.mc.core.api.entrypoint.client;
 
 import dev.yumi.mc.core.api.ModContainer;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A mod initializer which is run only on {@link net.fabricmc.api.EnvType#CLIENT}.
@@ -28,6 +29,7 @@ import dev.yumi.mc.core.api.ModContainer;
  * @see dev.yumi.mc.core.api.entrypoint.server.DedicatedServerModInitializer
  * @see dev.yumi.mc.core.api.entrypoint Entrypoints - Registering entrypoints
  */
+@NullMarked
 public interface ClientModInitializer {
 	/**
 	 * Represents the key which this value is defined with, whose value is {@value}.

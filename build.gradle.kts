@@ -27,7 +27,7 @@ lambdamcdev {
 			}
 			this.withLicense(Constants.LICENSE_NAME)
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationMod")
-			this.withDepend("minecraft", "~1.21")
+			this.withDepend("minecraft", "~1.21.9-")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
 			this.withDepend("yumi_commons_event", "~${libs.versions.yumi.commons.get()}")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
@@ -90,9 +90,10 @@ dependencies {
 	@Suppress("UnstableApiUsage")
 	mappings(loom.layered {
 		officialMojangMappings()
-		mappings("dev.lambdaurora:yalmm:${Constants.mcVersion()}+build.${libs.versions.mappings.yalmm.get()}")
+		mappings("dev.lambdaurora:yalmm-mojbackward:${Constants.mcVersion()}+build.${libs.versions.mappings.yalmm.get()}")
 	})
 
+	api(libs.jspecify)
 	api(libs.yumi.commons.core) {
 		// Exclude Minecraft and loader-provided libraries.
 		exclude(group = "org.slf4j")

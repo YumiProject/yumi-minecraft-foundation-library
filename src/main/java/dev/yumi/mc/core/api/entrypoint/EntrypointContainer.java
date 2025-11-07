@@ -9,7 +9,6 @@
 package dev.yumi.mc.core.api.entrypoint;
 
 import dev.yumi.mc.core.api.ModContainer;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the container of an entrypoint.
@@ -20,8 +19,4 @@ import org.jetbrains.annotations.NotNull;
  * @version 1.0.0
  * @since 1.0.0
  */
-public record EntrypointContainer<T>(
-		@NotNull ModContainer mod,
-		@NotNull T value
-) {
-}
+public record EntrypointContainer<T>(ModContainer mod, T value) {}
