@@ -9,7 +9,7 @@
 package dev.yumi.mc.core.impl.neoforge;
 
 import net.neoforged.fml.jarcontents.JarResourceAttributes;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -61,7 +61,7 @@ public record NeoForgeFileAttributes(
 	}
 
 	@Override
-	public Object fileKey() {
+	public @Nullable Object fileKey() {
 		return null;
 	}
 }

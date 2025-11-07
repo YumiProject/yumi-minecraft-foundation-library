@@ -11,8 +11,7 @@ package dev.yumi.mc.core.impl.neoforge;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.fml.jarcontents.JarResource;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.*;
 import java.nio.file.attribute.UserPrincipalLookupService;
@@ -80,7 +79,7 @@ public class NeoForgeFileSystem extends FileSystem {
 		return Set.of();
 	}
 
-	@Nullable Entry resolveEntry(@NotNull NeoForgePath path) {
+	@Nullable Entry resolveEntry(NeoForgePath path) {
 		if (path.getFileName() == null) {
 			return null;
 		} else if (path.isRoot()) {
@@ -102,12 +101,12 @@ public class NeoForgeFileSystem extends FileSystem {
 		return entry;
 	}
 
-	@NotNull NeoForgePath createPath(@Nullable NeoForgePath parent, String name) {
+	NeoForgePath createPath(@Nullable NeoForgePath parent, String name) {
 		return new NeoForgePath(this, parent, name);
 	}
 
 	@Override
-	public @NotNull Path getPath(@NotNull String first, @NotNull String @NotNull ... more) {
+	public Path getPath(String first, String... more) {
 		if (first.isEmpty()) {
 			return this.createPath(null, "");
 		}

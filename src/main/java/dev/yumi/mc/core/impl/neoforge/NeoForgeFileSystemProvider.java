@@ -10,8 +10,7 @@ package dev.yumi.mc.core.impl.neoforge;
 
 import dev.yumi.commons.function.YumiPredicates;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class NeoForgeFileSystemProvider extends FileSystemProvider {
 	}
 
 	@Override
-	public @NotNull Path getPath(@NotNull URI uri) {
+	public Path getPath(URI uri) {
 		throw new UnsupportedOperationException(
 				"This method should not be called directly; use Path.of(URI) instead."
 		);
@@ -92,7 +91,7 @@ public class NeoForgeFileSystemProvider extends FileSystemProvider {
 	}
 
 	@Override
-	public DirectoryStream<Path> newDirectoryStream(Path dir, @Nullable DirectoryStream.Filter<? super Path> filter)
+	public DirectoryStream<Path> newDirectoryStream(Path dir, DirectoryStream.@Nullable Filter<? super Path> filter)
 			throws IOException {
 		var path = (NeoForgePath) dir;
 
@@ -102,7 +101,7 @@ public class NeoForgeFileSystemProvider extends FileSystemProvider {
 
 		return new DirectoryStream<>() {
 			@Override
-			public @NotNull Iterator<Path> iterator() {
+			public Iterator<Path> iterator() {
 				var stream = directory.entries().values().stream()
 						.map(NeoForgeFileSystem.Entry::name)
 						.map(dir::resolve);
@@ -147,7 +146,7 @@ public class NeoForgeFileSystemProvider extends FileSystemProvider {
 	}
 
 	@Override
-	public boolean isSameFile(Path a, Path b) {
+	public boolean isSameFile(Path a, @Nullable Path b) {
 		if (b == null || a.getFileSystem() != b.getFileSystem()) {
 			return false;
 		}
@@ -161,7 +160,7 @@ public class NeoForgeFileSystemProvider extends FileSystemProvider {
 	}
 
 	@Override
-	public FileStore getFileStore(Path path) {
+	public @Nullable FileStore getFileStore(Path path) {
 		return null;
 	}
 
@@ -171,7 +170,7 @@ public class NeoForgeFileSystemProvider extends FileSystemProvider {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V extends FileAttributeView> V getFileAttributeView(Path path, Class<V> type, LinkOption... options) {
+	public <V extends FileAttributeView> @Nullable V getFileAttributeView(Path path, @Nullable Class<V> type, LinkOption... options) {
 		if (type == null)
 			throw new NullPointerException();
 		if (type == BasicFileAttributeView.class)

@@ -25,8 +25,7 @@
 
 package dev.yumi.mc.core.impl.neoforge;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URI;
@@ -89,7 +88,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull NeoForgeFileSystem getFileSystem() {
+	public NeoForgeFileSystem getFileSystem() {
 		return this.fileSystem;
 	}
 
@@ -103,7 +102,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public Path getRoot() {
+	public @Nullable Path getRoot() {
 		if (this.absolute) {
 			return this.fileSystem.root;
 		}
@@ -112,7 +111,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public Path getFileName() {
+	public @Nullable Path getFileName() {
 		if (this.name.isEmpty()) {
 			return null;
 		} else if (parent == null) {
@@ -133,7 +132,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull Path getName(int index) {
+	public Path getName(int index) {
 		if (index < 0 || index >= this.getNameCount()) {
 			throw new IllegalArgumentException("Index out of bounds.");
 		}
@@ -156,7 +155,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull Path subpath(int beginIndex, int endIndex) {
+	public Path subpath(int beginIndex, int endIndex) {
 		if (beginIndex < 0) {
 			throw new IllegalArgumentException("beginIndex < 0!");
 		}
@@ -202,7 +201,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public boolean startsWith(@NotNull Path other) {
+	public boolean startsWith(Path other) {
 		if (other instanceof NeoForgePath o) {
 			if (this.isAbsolute() != o.isAbsolute()) {
 				return false;
@@ -224,12 +223,12 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public boolean startsWith(@NotNull String other) {
+	public boolean startsWith(String other) {
 		return this.startsWith(this.fileSystem.getPath(other));
 	}
 
 	@Override
-	public boolean endsWith(@NotNull Path other) {
+	public boolean endsWith(Path other) {
 		if (other instanceof NeoForgePath o) {
 			var t = this;
 
@@ -249,12 +248,12 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public boolean endsWith(@NotNull String other) {
+	public boolean endsWith(String other) {
 		return this.endsWith(this.fileSystem.getPath(other));
 	}
 
 	@Override
-	public @NotNull NeoForgePath normalize() {
+	public NeoForgePath normalize() {
 		if (this.normalized) {
 			return this;
 		}
@@ -297,7 +296,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull NeoForgePath resolve(@NotNull Path other) {
+	public NeoForgePath resolve(Path other) {
 		if (other.isAbsolute()) {
 			return (NeoForgePath) other;
 		}
@@ -323,7 +322,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull NeoForgePath resolve(String other) {
+	public NeoForgePath resolve(String other) {
 		var p = this;
 		for (String s : other.split(this.fileSystem.getSeparator())) {
 			if (!s.isEmpty()) {
@@ -334,7 +333,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull Path relativize(@NotNull Path other) {
+	public Path relativize(Path other) {
 		var o = (NeoForgePath) other;
 		if (o.equals(this)) {
 			return this.fileSystem.createPath(null, "");
@@ -375,11 +374,12 @@ public class NeoForgePath implements Path {
 			}
 		}
 
+		assert path != null;
 		return path;
 	}
 
 	@Override
-	public @NotNull URI toUri() {
+	public URI toUri() {
 		if (!this.isAbsolute()) return this.toAbsolutePath().toUri();
 		try {
 			// Constructing as components ensures proper quoting on most
@@ -395,7 +395,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull NeoForgePath toAbsolutePath() {
+	public NeoForgePath toAbsolutePath() {
 		if (this.isAbsolute()) {
 			return this;
 		}
@@ -404,15 +404,15 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull NeoForgePath toRealPath(@NotNull LinkOption... options) {
+	public NeoForgePath toRealPath(LinkOption... options) {
 		return this.toAbsolutePath();
 	}
 
 	@Override
-	public @NotNull WatchKey register(
-			@NotNull WatchService watcher,
-			WatchEvent.Kind<?> @NotNull [] events,
-			@NotNull WatchEvent.Modifier @NotNull ... modifiers
+	public WatchKey register(
+			WatchService watcher,
+			WatchEvent.Kind<?>[] events,
+			WatchEvent.Modifier... modifiers
 	) throws IOException {
 		throw new UnsupportedOperationException();
 	}
@@ -437,7 +437,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public int compareTo(@NotNull Path other) {
+	public int compareTo(Path other) {
 		return this.toString().compareTo(other.toString());
 	}
 
@@ -463,7 +463,7 @@ public class NeoForgePath implements Path {
 	}
 
 	@Override
-	public @NotNull String toString() {
+	public String toString() {
 		if (this.isRoot()) {
 			return ROOT;
 		} else if (this.parent != null) {
