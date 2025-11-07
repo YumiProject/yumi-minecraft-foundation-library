@@ -15,12 +15,11 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @ApiStatus.Internal
 public final class FabricModContainer extends AbstractModContainer {
@@ -33,33 +32,36 @@ public final class FabricModContainer extends AbstractModContainer {
 	}
 
 	private static ManifestCustomValue.ObjectValue readCustomProperties(ModMetadata metadata) {
-		record Entry(String key, ManifestCustomValue<?> value) {}
-		Map<String, ManifestCustomValue<?>> map = metadata.getCustomValues().entrySet()
-				.stream()
-				.map(entry -> new Entry(entry.getKey(), mapCustomValue(entry.getValue())))
-				.filter(entry -> entry.value != null)
-				.collect(Collectors.toMap(Entry::key, Entry::value));
+		var map = new HashMap<String, ManifestCustomValue<?>>();
+
+		for (var entry : metadata.getCustomValues().entrySet()) {
+			var value = mapCustomValue(entry.getValue());
+
+			if (value != null) {
+				map.put(entry.getKey(), value);
+			}
+		}
 
 		return new ManifestCustomValue.ObjectValue(Map.copyOf(map));
 	}
 
 	@Override
-	public @NotNull String id() {
+	public String id() {
 		return this.fabric.getMetadata().getId();
 	}
 
 	@Override
-	public @NotNull String getName() {
+	public String getName() {
 		return this.fabric.getMetadata().getName();
 	}
 
 	@Override
-	public @NotNull String getVersionString() {
+	public String getVersionString() {
 		return this.fabric.getMetadata().getVersion().toString();
 	}
 
 	@Override
-	public @NotNull Optional<Path> findPath(String first, String... more) {
+	public Optional<Path> findPath(String first, String... more) {
 		var path = new StringBuilder(first);
 		for (var part : more) {
 			path.append('/').append(part);
@@ -69,7 +71,7 @@ public final class FabricModContainer extends AbstractModContainer {
 	}
 
 	@Override
-	public @NotNull Optional<dev.yumi.mc.core.api.ModContainer> getContainingMod() {
+	public Optional<dev.yumi.mc.core.api.ModContainer> getContainingMod() {
 		return this.fabric.getContainingMod().flatMap(mod -> YumiMods.get().getMod(mod.getMetadata().getId()));
 	}
 
@@ -94,17 +96,17 @@ public final class FabricModContainer extends AbstractModContainer {
 		});
 	}
 
-	private static ManifestCustomValue<?> mapCustomValue(CustomValue customValue) {
+	private static @Nullable ManifestCustomValue<?> mapCustomValue(CustomValue customValue) {
 		return switch (customValue.getType()) {
 			case OBJECT -> {
-				var map = new HashMap<String, ManifestCustomValue<?>>();
+				var map = new HashMap<String, @Nullable ManifestCustomValue<?>>();
 				for (var entry : customValue.getAsObject()) {
 					map.put(entry.getKey(), mapCustomValue(entry.getValue()));
 				}
 				yield new ManifestCustomValue.ObjectValue(Collections.unmodifiableMap(map));
 			}
 			case ARRAY -> {
-				var list = new ArrayList<ManifestCustomValue<?>>();
+				var list = new ArrayList<@Nullable ManifestCustomValue<?>>();
 				for (var entry : customValue.getAsArray()) {
 					list.add(mapCustomValue(entry));
 				}

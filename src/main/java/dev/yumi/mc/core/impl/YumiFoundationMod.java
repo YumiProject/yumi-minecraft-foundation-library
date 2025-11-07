@@ -27,7 +27,7 @@ import java.util.Stack;
 @ApiStatus.Internal
 public final class YumiFoundationMod implements ModInitializer {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier SYSTEM_DETAILS_POPULATION_PHASE = Identifier.of(
+	private static final Identifier SYSTEM_DETAILS_POPULATION_PHASE = Identifier.fromNamespaceAndPath(
 			"yumi", "populate_system_details"
 	);
 

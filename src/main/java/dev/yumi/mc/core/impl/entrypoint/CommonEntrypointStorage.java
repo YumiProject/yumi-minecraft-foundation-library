@@ -101,10 +101,10 @@ final class CommonEntrypointStorage implements EntrypointStorage {
 				throw new IllegalArgumentException("Invalid handle format: " + value);
 			}
 
-			Class<?> c;
+			Class<? extends T> c;
 
 			try {
-				c = Class.forName(methodSplit[0]);
+				c = (Class<? extends T>) Class.forName(methodSplit[0]);
 			} catch (ClassNotFoundException e) {
 				throw new IllegalArgumentException(e);
 			}
@@ -112,9 +112,15 @@ final class CommonEntrypointStorage implements EntrypointStorage {
 			if (methodSplit.length == 1) {
 				if (type.isAssignableFrom(c)) {
 					try {
-						return (T) c.getDeclaredConstructor().newInstance();
+						return c.getDeclaredConstructor().newInstance();
 					} catch (Exception e) {
-						throw new IllegalArgumentException(e);
+						try {
+							return c.getDeclaredConstructor(ModContainer.class).newInstance(this.mod);
+						} catch (Exception ex) {
+							var newError = new IllegalArgumentException(ex);
+							newError.addSuppressed(e);
+							throw newError;
+						}
 					}
 				} else {
 					throw new IllegalArgumentException("Class " + c.getName() + " cannot be cast to " + type.getName() + "!");
@@ -163,7 +169,7 @@ final class CommonEntrypointStorage implements EntrypointStorage {
 					throw new IllegalArgumentException("Found multiple method entries of name " + value + "!");
 				}
 
-				final Method targetMethod = methodList.get(0);
+				final Method targetMethod = methodList.getFirst();
 				Object object = null;
 
 				if ((targetMethod.getModifiers() & Modifier.STATIC) == 0) {

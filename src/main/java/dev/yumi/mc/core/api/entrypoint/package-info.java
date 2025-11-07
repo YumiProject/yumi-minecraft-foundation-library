@@ -70,4 +70,7 @@
  * {@link dev.yumi.mc.core.api.YumiMods#invokeEntrypoints(java.lang.String, java.lang.Class, java.util.function.BiConsumer)}
  * for invocation.
  */
+@NullMarked
 package dev.yumi.mc.core.api.entrypoint;
+
+import org.jspecify.annotations.NullMarked;

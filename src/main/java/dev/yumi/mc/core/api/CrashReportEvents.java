@@ -8,6 +8,7 @@
 
 package dev.yumi.mc.core.api;
 
+import com.mojang.logging.LogUtils;
 import dev.yumi.commons.event.Event;
 import dev.yumi.mc.core.api.event.EventAwareListener;
 import net.minecraft.CrashReport;
@@ -20,20 +21,31 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Provides multiple crash-report-related events,
  * which allow to detect when a crash-report gets generated and to add custom debugging information.
  */
 public final class CrashReportEvents {
+	private static final Logger LOGGER = LogUtils.getLogger();
+
 	/**
 	 * The crash report creation event.
 	 * This event is invoked when a crash report is created.
 	 *
 	 * @see Creation
 	 */
-	public static final Event<Identifier, Creation> CREATE = YumiEvents.EVENTS.create(Creation.class);
+	public static final Event<Identifier, Creation> CREATE = YumiEvents.EVENTS.create(Creation.class, listeners -> report -> {
+		for (var listener : listeners) {
+			try {
+				listener.onCrashReportCreation(report);
+			} catch (Throwable e) {
+				LOGGER.error("Failed to trigger crash report listener {}:", listener, e);
+			}
+		}
+	});
 
 	/**
 	 * The crash report system details population event.
@@ -43,7 +55,15 @@ public final class CrashReportEvents {
 	 * @see SystemReport
 	 */
 	public static final Event<Identifier, SystemDetailsPopulation> SYSTEM_DETAILS_POPULATE
-			= YumiEvents.EVENTS.create(SystemDetailsPopulation.class);
+			= YumiEvents.EVENTS.create(SystemDetailsPopulation.class, listeners -> report -> {
+		for (var listener : listeners) {
+			try {
+				listener.onCrashReportSystemDetailsPopulation(report);
+			} catch (Throwable e) {
+				LOGGER.error("Failed to trigger system details population listener {}:", listener, e);
+			}
+		}
+	});
 
 	/**
 	 * The crash report entity details population event.
@@ -51,8 +71,18 @@ public final class CrashReportEvents {
 	 *
 	 * @see EntityDetailsPopulation
 	 */
-	public static final Event<Identifier, EntityDetailsPopulation> ENTITY_DETAILS_POPULATE
-			= YumiEvents.EVENTS.create(EntityDetailsPopulation.class);
+	public static final Event<Identifier, EntityDetailsPopulation> ENTITY_DETAILS_POPULATE = YumiEvents.EVENTS.create(
+			EntityDetailsPopulation.class,
+			listeners -> (entity, category) -> {
+				for (var listener : listeners) {
+					try {
+						listener.onCrashReportEntityDetailsPopulation(entity, category);
+					} catch (Throwable e) {
+						LOGGER.error("Failed to trigger entity details population listener {}:", listener, e);
+					}
+				}
+			}
+	);
 
 	/**
 	 * The crash report block entity details population event.
@@ -60,8 +90,18 @@ public final class CrashReportEvents {
 	 *
 	 * @see BlockEntityDetailsPopulation
 	 */
-	public static final Event<Identifier, BlockEntityDetailsPopulation> BLOCK_ENTITY_DETAILS_POPULATE
-			= YumiEvents.EVENTS.create(BlockEntityDetailsPopulation.class);
+	public static final Event<Identifier, BlockEntityDetailsPopulation> BLOCK_ENTITY_DETAILS_POPULATE = YumiEvents.EVENTS.create(
+			BlockEntityDetailsPopulation.class,
+			listeners -> (blockEntity, category) -> {
+				for (var listener : listeners) {
+					try {
+						listener.onCrashReportBlockEntityDetailsPopulation(blockEntity, category);
+					} catch (Throwable e) {
+						LOGGER.error("Failed to trigger block entity details population listener {}:", listener, e);
+					}
+				}
+			}
+	);
 
 	/**
 	 * The crash report block details population event.
@@ -70,8 +110,18 @@ public final class CrashReportEvents {
 	 *
 	 * @see BlockDetailsPopulation
 	 */
-	public static final Event<Identifier, BlockDetailsPopulation> BLOCK_DETAILS_POPULATE
-			= YumiEvents.EVENTS.create(BlockDetailsPopulation.class);
+	public static final Event<Identifier, BlockDetailsPopulation> BLOCK_DETAILS_POPULATE = YumiEvents.EVENTS.create(
+			BlockDetailsPopulation.class,
+			listeners -> (level, pos, state, category) -> {
+				for (var listener : listeners) {
+					try {
+						listener.onCrashReportBlockDetailsPopulation(level, pos, state, category);
+					} catch (Throwable e) {
+						LOGGER.error("Failed to trigger block details population listener {}:", listener, e);
+					}
+				}
+			}
+	);
 
 	/**
 	 * The crash report level details population event.
@@ -79,8 +129,18 @@ public final class CrashReportEvents {
 	 *
 	 * @see LevelDetailsPopulation
 	 */
-	public static final Event<Identifier, LevelDetailsPopulation> LEVEL_DETAILS_POPULATE
-			= YumiEvents.EVENTS.create(LevelDetailsPopulation.class);
+	public static final Event<Identifier, LevelDetailsPopulation> LEVEL_DETAILS_POPULATE = YumiEvents.EVENTS.create(
+			LevelDetailsPopulation.class,
+			listeners -> (level, category) -> {
+				for (var listener : listeners) {
+					try {
+						listener.onCrashReportLevelDetailsPopulation(level, category);
+					} catch (Throwable e) {
+						LOGGER.error("Failed to trigger level details population listener {}:", listener, e);
+					}
+				}
+			}
+	);
 
 	/**
 	 * Represents the crash report creation callback interface.

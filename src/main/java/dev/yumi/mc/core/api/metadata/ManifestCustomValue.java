@@ -8,8 +8,9 @@
 
 package dev.yumi.mc.core.api.metadata;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -17,24 +18,25 @@ import java.util.Map;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+@NullMarked
 public sealed interface ManifestCustomValue<T> {
-	@NotNull T value();
+	T value();
 
-	record ObjectValue(@Unmodifiable Map<String, ManifestCustomValue<?>> value)
+	record ObjectValue(@Unmodifiable Map<String, @Nullable ManifestCustomValue<?>> value)
 			implements ManifestCustomValue<Map<String, ManifestCustomValue<?>>> {
 		public boolean isEmpty() {
 			return this.value.isEmpty();
 		}
 
-		public ManifestCustomValue<?> get(@NotNull String key) {
+		public @Nullable ManifestCustomValue<?> get(String key) {
 			return this.value.get(key);
 		}
 	}
 
-	record ArrayValue(@Unmodifiable List<ManifestCustomValue<?>> value)
+	record ArrayValue(@Unmodifiable List<@Nullable ManifestCustomValue<?>> value)
 			implements ManifestCustomValue<List<ManifestCustomValue<?>>>, Iterable<ManifestCustomValue<?>> {
 		@Override
-		public @NotNull Iterator<ManifestCustomValue<?>> iterator() {
+		public Iterator<ManifestCustomValue<?>> iterator() {
 			return this.value.iterator();
 		}
 
@@ -44,7 +46,7 @@ public sealed interface ManifestCustomValue<T> {
 		}
 
 		@Override
-		public @NotNull Spliterator<ManifestCustomValue<?>> spliterator() {
+		public Spliterator<ManifestCustomValue<?>> spliterator() {
 			return this.value.spliterator();
 		}
 	}
@@ -54,7 +56,7 @@ public sealed interface ManifestCustomValue<T> {
 
 	record BooleanValue(boolean bool) implements ManifestCustomValue<Boolean> {
 		@Override
-		public @NotNull Boolean value() {
+		public Boolean value() {
 			return this.bool;
 		}
 	}

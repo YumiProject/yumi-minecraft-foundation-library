@@ -9,7 +9,6 @@
 package dev.yumi.mc.core.api;
 
 import dev.yumi.mc.core.api.metadata.ManifestCustomValue;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.nio.file.Path;
@@ -27,17 +26,17 @@ public interface ModContainer {
 	/**
 	 * {@return the identifier of this mod}
 	 */
-	@NotNull String id();
+	String id();
 
 	/**
 	 * {@return the name of this mod}
 	 */
-	@NotNull String getName();
+	String getName();
 
 	/**
 	 * {@return the string representation of the version of this mod}
 	 */
-	@NotNull String getVersionString();
+	String getVersionString();
 
 	/**
 	 * Finds a resource path inside this mod.
@@ -46,12 +45,12 @@ public interface ModContainer {
 	 * @param more additional strings to be joined to form the path string
 	 * @return the path if it exists, or {@link Optional#empty()} otherwise
 	 */
-	@NotNull Optional<Path> findPath(String first, String... more);
+	Optional<Path> findPath(String first, String... more);
 
 	/**
 	 * {@return the mod which contains this mod, if any}
 	 */
-	@NotNull Optional<ModContainer> getContainingMod();
+	Optional<ModContainer> getContainingMod();
 
 	/**
 	 * {@return the collection of mods contained within this mod}

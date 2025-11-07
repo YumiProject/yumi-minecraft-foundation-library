@@ -10,6 +10,9 @@
 	},
 	"custom": {
 		"yumi:entrypoints": {
+			"yumi:init": [
+				"dev.yumi.mc.core.test.ConstructorTest"
+			],
 			"yumi:client_init": [
 				"dev.yumi.mc.core.test.client.TestClientModInitializer"
 			],
