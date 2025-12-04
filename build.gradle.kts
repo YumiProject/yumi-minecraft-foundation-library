@@ -1,7 +1,6 @@
 import dev.lambdaurora.mcdev.api.McVersionLookup
 import net.fabricmc.loom.task.RemapJarTask
 import yumimc.Constants
-import yumimc.task.FabricTransformJar
 
 plugins {
 	id("yumi-mc-core")
@@ -27,7 +26,7 @@ lambdamcdev {
 			}
 			this.withLicense(Constants.LICENSE_NAME)
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationMod")
-			this.withDepend("minecraft", "~1.21.9-")
+			this.withDepend("minecraft", "~1.21.11-")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
 			this.withDepend("yumi_commons_event", "~${libs.versions.yumi.commons.get()}")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
@@ -87,11 +86,7 @@ configurations.getByName("mojmapApi") {
 }
 
 dependencies {
-	@Suppress("UnstableApiUsage")
-	mappings(loom.layered {
-		officialMojangMappings()
-		mappings("dev.lambdaurora:yalmm-mojbackward:${Constants.mcVersion()}+build.${libs.versions.mappings.yalmm.get()}")
-	})
+	mappings(loom.officialMojangMappings())
 
 	api(libs.jspecify)
 	api(libs.yumi.commons.core) {
@@ -140,12 +135,18 @@ loom {
 }
 
 tasks.jar {
+	dependsOn(tasks.processIncludeJars)
 	inputs.property("archivesName", base.archivesName)
 
 	from("LICENSE") {
 		rename { "${it}_${inputs.properties["archivesName"]}" }
 	}
 }
+
+loom.nestJars(
+	tasks.jar,
+	fileTree(tasks.processIncludeJars.flatMap { it.outputDirectory })
+)
 
 tasks.javadoc {
 	val exclude = listOf(
@@ -158,6 +159,13 @@ tasks.javadoc {
 		this as StandardJavadocDocletOptions
 
 		addStringOption("Xdoclint:all,-missing", "-quiet")
+		links(
+			"https://jspecify.dev/docs/api/",
+			"https://javadoc.io/doc/org.jetbrains/annotations/26.0.2/",
+			"https://javadoc.io/doc/dev.yumi.commons/yumi-commons-core/${libs.versions.yumi.commons.get()}/",
+			//"https://javadoc.io/doc/dev.yumi.commons/yumi-commons-collections/${libs.versions.yumi.commons.get()}/",
+			"https://javadoc.io/doc/dev.yumi.commons/yumi-commons-event/${libs.versions.yumi.commons.get()}/"
+		)
 	}
 }
 
@@ -186,38 +194,11 @@ license {
 
 //region Mojmap
 tasks.remapJar.configure {
-	this.archiveClassifier = "unprocessed"
-	this.destinationDirectory = layout.buildDirectory.map { directory -> directory.dir("devlibs") }
+	this.addNestedDependencies = false
 }
 
-val processFabric by tasks.registering(FabricTransformJar::class) {
-	this.group = "build"
-	this.dependsOn(tasks.remapJar)
-	inputJar.set(tasks.remapJar.flatMap { it.archiveFile })
-}
-
-afterEvaluate {
-	lambdamcdev.replaceArtifactInConfiguration(
-		JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME, processFabric
-	)
-	lambdamcdev.replaceArtifactInConfiguration(
-		JavaPlugin.RUNTIME_ELEMENTS_CONFIGURATION_NAME, processFabric
-	)
-}
-
-val remapMojmap = mojmap.registerRemap(tasks.remapJar) {}
-mojmap.setJarArtifact(remapMojmap)
-
-val remapTestmodMojmap = mojmap.registerRemap("remapTestmodJarToMojmap") {
-	this.dependsOn(remapTestmodJar)
-	this.inputFile.set(remapTestmodJar.flatMap { it.archiveFile })
-	this.archiveClassifier = "testmod-mojmap"
-}
-
-tasks.assemble.configure { this.dependsOn(processFabric, remapMojmap, remapTestmodMojmap) }
-
-val remapMojmapSources = mojmap.registerSourcesRemap(tasks.remapSourcesJar) {}
-mojmap.setSourcesArtifact(remapMojmapSources)
+mojmap.setJarArtifact(tasks.jar)
+mojmap.setSourcesArtifact(tasks.sourcesJar)
 //endregion
 
 // Setup publishing of artifacts.
