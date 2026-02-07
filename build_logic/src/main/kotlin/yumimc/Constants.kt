@@ -7,7 +7,7 @@ data class Developer(val name: String, val email: String)
 object Constants {
 	const val NAMESPACE = "yumi_mc_core"
 
-	const val JAVA_VERSION = 21
+	const val JAVA_VERSION = 25
 
 	const val PROJECT_NAME = "Yumi Minecraft Libraries: Foundation"
 	const val PROJECT_URL = "https://github.com/YumiProject/yumi-minecraft-foundation-library"

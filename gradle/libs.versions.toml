@@ -5,10 +5,10 @@ neoforge-loader = "10.0.34"
 
 # Dependencies
 jspecify = "1.0.0"
-yumi-commons = "1.0.0"
+yumi-commons = "2.0.0"
 
 # Gradle
-gradle-licenser = "2.1.+"
+gradle-licenser = "2.2.+"
 gradle-loom = "1.14.+"
 gradle-lambdamcdev = "1.8.+"
 gradle-nexus-publish = "2.0.0"
