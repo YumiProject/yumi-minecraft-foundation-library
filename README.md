@@ -20,11 +20,11 @@ dependencies {
 
 In a Mojang mapped environment:
 ```kotlin
-dependencies {
-	implementation("dev.yumi.mc.core:yumi-mc-foundation:version") {
-		capabilities {
-			requireCapability("dev.yumi.mc.core:yumi-mc-foundation-mojmap")
-		}
+val mappingsAttribute = Attribute.of("net.minecraft.mappings", String::class.java)
+
+implementation(libs.yumi.mc.foundation) {
+	attributes {
+		attribute(mappingsAttribute, "mojmap")
 	}
 }
 ```
