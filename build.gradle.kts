@@ -1,5 +1,4 @@
 import dev.lambdaurora.mcdev.api.McVersionLookup
-import net.fabricmc.loom.task.RemapJarTask
 import yumimc.Constants
 
 plugins {
@@ -26,7 +25,7 @@ lambdamcdev {
 			}
 			this.withLicense(Constants.LICENSE_NAME)
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationMod")
-			this.withDepend("minecraft", "~1.21.11-")
+			this.withDepend("minecraft", "~26.1-")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
 			this.withDepend("yumi_commons_event", "~${libs.versions.yumi.commons.get()}")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
@@ -60,6 +59,7 @@ repositories {
 		content {
 			includeGroupByRegex("net\\.neoforged.*")
 			includeGroupByRegex("cpw\\.mods.*")
+			includeGroupAndSubgroups("net.minecraftforge")
 		}
 	}
 }
@@ -72,22 +72,11 @@ val testmod: SourceSet by sourceSets.creating {
 afterEvaluate {
 	val shims: SourceSet by sourceSets.creating {
 		this.compileClasspath += configurations["minecraftNamedCompile"]
+		sourceSets.main.get().compileClasspath += this.output
 	}
-
-	dependencies {
-		compileOnly(shims.output)
-	}
-}
-
-val mojmap = lambdamcdev.setupMojmapRemapping()
-
-configurations.getByName("mojmapApi") {
-	this.extendsFrom(configurations["api"])
 }
 
 dependencies {
-	mappings(loom.officialMojangMappings())
-
 	api(libs.jspecify)
 	api(libs.yumi.commons.core) {
 		// Exclude Minecraft and loader-provided libraries.
@@ -108,9 +97,9 @@ dependencies {
 	include(libs.yumi.commons.collections)
 	include(libs.yumi.commons.event)
 
-	modCompileOnly(libs.fabric.loader)
+	compileOnly(libs.fabric.loader)
 	compileOnly(libs.neoforge.loader)
-	modLocalRuntime(libs.fabric.loader)
+	localRuntime(libs.fabric.loader)
 
 	"testmodImplementation"(sourceSets.main.get().output)
 }
@@ -143,11 +132,6 @@ tasks.jar {
 	}
 }
 
-loom.nestJars(
-	tasks.jar,
-	fileTree(tasks.processIncludeJars.flatMap { it.outputDirectory })
-)
-
 tasks.javadoc {
 	val exclude = listOf(
 		project.file("src/main/java/dev/yumi/mc/core/impl"),
@@ -163,7 +147,7 @@ tasks.javadoc {
 			"https://jspecify.dev/docs/api/",
 			"https://javadoc.io/doc/org.jetbrains/annotations/26.0.2/",
 			"https://javadoc.io/doc/dev.yumi.commons/yumi-commons-core/${libs.versions.yumi.commons.get()}/",
-			//"https://javadoc.io/doc/dev.yumi.commons/yumi-commons-collections/${libs.versions.yumi.commons.get()}/",
+			"https://javadoc.io/doc/dev.yumi.commons/yumi-commons-collections/${libs.versions.yumi.commons.get()}/",
 			"https://javadoc.io/doc/dev.yumi.commons/yumi-commons-event/${libs.versions.yumi.commons.get()}/"
 		)
 	}
@@ -173,33 +157,16 @@ tasks.javadoc {
 val testmodJar = tasks.register<Jar>("testmodJar") {
 	this.group = "build"
 	this.from(testmod.output)
-	this.archiveClassifier = "testmod-dev"
-	this.destinationDirectory = project.file("build/devlibs")
-}
-
-val remapTestmodJar = tasks.register<RemapJarTask>("remapTestmodJar") {
-	this.group = "build"
-	this.dependsOn(testmodJar.get())
-	this.inputFile.set(testmodJar.get().archiveFile)
-	this.classpath.from(testmod.compileClasspath)
 	this.archiveClassifier = "testmod"
 }
-tasks.build.get().dependsOn(remapTestmodJar)
+
+tasks.build.get().dependsOn(testmodJar)
 //endregion
 
 license {
 	rule(rootProject.file("codeformat/HEADER"))
 	excludeSourceSet("shims")
 }
-
-//region Mojmap
-tasks.remapJar.configure {
-	this.addNestedDependencies = false
-}
-
-mojmap.setJarArtifact(tasks.jar)
-mojmap.setSourcesArtifact(tasks.sourcesJar)
-//endregion
 
 // Setup publishing of artifacts.
 publishing {

@@ -1,6 +1,6 @@
 [versions]
-minecraft = "1.21.11-rc1"
-fabric-loader = "0.18.1"
+minecraft = "26.1-snapshot-6"
+fabric-loader = "0.18.4"
 neoforge-loader = "10.0.34"
 
 # Dependencies
@@ -9,7 +9,7 @@ yumi-commons = "2.0.0"
 
 # Gradle
 gradle-licenser = "2.2.+"
-gradle-loom = "1.14.+"
+gradle-loom = "1.15.+"
 gradle-lambdamcdev = "1.8.+"
 gradle-nexus-publish = "2.0.0"
 gson = "2.11.0"

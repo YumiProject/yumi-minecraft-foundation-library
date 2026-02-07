@@ -2,7 +2,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import yumimc.Constants
 
 plugins {
-	id("fabric-loom")
+	id("net.fabricmc.fabric-loom")
 	id("dev.lambdaurora.mcdev")
 }
 
