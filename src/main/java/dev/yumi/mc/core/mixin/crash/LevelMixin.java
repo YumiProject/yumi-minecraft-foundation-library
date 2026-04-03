@@ -18,10 +18,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Level.class)
-public class LevelMixin {
+class LevelMixin {
 	@Inject(method = "fillReportDetails", at = @At("TAIL"))
 	public void yumi$onPopulateCrashDetails(CrashReport crashReport, CallbackInfoReturnable<CrashReportCategory> cir) {
-		CrashReportEvents.LEVEL_DETAILS_POPULATE.invoker()
-				.onCrashReportLevelDetailsPopulation((Level) (Object) this, cir.getReturnValue());
+		try {
+			CrashReportEvents.LEVEL_DETAILS_POPULATE.invoker()
+					.onCrashReportLevelDetailsPopulation((Level) (Object) this, cir.getReturnValue());
+		} catch (Throwable e) {
+			crashReport.getException().addSuppressed(e);
+		}
 	}
 }

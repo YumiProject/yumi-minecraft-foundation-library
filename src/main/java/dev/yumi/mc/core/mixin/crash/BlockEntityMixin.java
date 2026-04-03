@@ -17,10 +17,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BlockEntity.class)
-public class BlockEntityMixin {
+class BlockEntityMixin {
 	@Inject(method = "fillCrashReportCategory", at = @At("TAIL"))
 	public void yumi$onPopulateCrashDetails(CrashReportCategory crashReportCategory, CallbackInfo ci) {
-		CrashReportEvents.BLOCK_ENTITY_DETAILS_POPULATE.invoker()
-				.onCrashReportBlockEntityDetailsPopulation((BlockEntity) (Object) this, crashReportCategory);
+		try {
+			CrashReportEvents.BLOCK_ENTITY_DETAILS_POPULATE.invoker()
+					.onCrashReportBlockEntityDetailsPopulation((BlockEntity) (Object) this, crashReportCategory);
+		} catch (Throwable e) {
+			crashReportCategory.setDetailError("Block Entity Details Population Error", e);
+		}
 	}
 }

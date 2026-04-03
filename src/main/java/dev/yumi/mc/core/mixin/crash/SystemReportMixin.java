@@ -28,8 +28,8 @@ class SystemReportMixin {
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void yumi$onInit(CallbackInfo ci) {
 		var $this = (SystemReport) (Object) this;
-		CrashReportEvents.SYSTEM_DETAILS_POPULATE.invoker().onCrashReportSystemDetailsPopulation($this);
 		try {
+			CrashReportEvents.SYSTEM_DETAILS_POPULATE.invoker().onCrashReportSystemDetailsPopulation($this);
 			YumiFoundationMod.populateSystemDetailsReport($this);
 		} catch (Throwable e) {
 			LOGGER.error("[Yumi MC Foundation] Failed to populate some parts of the crash report.", e);

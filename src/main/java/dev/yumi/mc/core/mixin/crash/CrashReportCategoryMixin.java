@@ -20,12 +20,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CrashReportCategory.class)
-public class CrashReportCategoryMixin {
+class CrashReportCategoryMixin {
 	@Inject(method = "populateBlockDetails", at = @At("TAIL"))
 	private static void yumi$onPopulateBlockCrashDetails(
 			CrashReportCategory crashReportCategory, LevelHeightAccessor level, BlockPos pos, @Nullable BlockState state, CallbackInfo ci
 	) {
-		CrashReportEvents.BLOCK_DETAILS_POPULATE.invoker()
-				.onCrashReportBlockDetailsPopulation(level, pos, state, crashReportCategory);
+		try {
+			CrashReportEvents.BLOCK_DETAILS_POPULATE.invoker()
+					.onCrashReportBlockDetailsPopulation(level, pos, state, crashReportCategory);
+		} catch (Throwable e) {
+			crashReportCategory.setDetailError("Block Details Population Error", e);
+		}
 	}
 }

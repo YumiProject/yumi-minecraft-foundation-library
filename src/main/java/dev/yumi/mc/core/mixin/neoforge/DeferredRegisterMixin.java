@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Map;
 
 @Mixin(DeferredRegister.class)
-public abstract class DeferredRegisterMixin implements DeferredRegisterUndeferrer {
+abstract class DeferredRegisterMixin implements DeferredRegisterUndeferrer {
 	@Final
 	@Shadow
 	private Map<?, ?> entries;

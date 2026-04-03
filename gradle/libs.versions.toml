@@ -1,6 +1,6 @@
 [versions]
-minecraft = "26.1-rc-2"
-fabric-loader = "0.18.4"
+minecraft = "26.1"
+fabric-loader = "0.18.5"
 neoforge-loader = "11.0.0"
 
 # Dependencies

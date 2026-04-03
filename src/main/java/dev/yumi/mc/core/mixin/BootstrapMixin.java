@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.io.PrintStream;
 
 @Mixin(Bootstrap.class)
-public class BootstrapMixin {
+class BootstrapMixin {
 	@Shadow
 	@Final
 	private static Logger LOGGER;
