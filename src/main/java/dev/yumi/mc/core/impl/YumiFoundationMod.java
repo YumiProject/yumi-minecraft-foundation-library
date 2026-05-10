@@ -13,6 +13,7 @@ import dev.yumi.mc.core.api.CrashReportEvents;
 import dev.yumi.mc.core.api.ModContainer;
 import dev.yumi.mc.core.api.YumiEvents;
 import dev.yumi.mc.core.api.YumiMods;
+import dev.yumi.mc.core.api.entrypoint.EntrypointContainer;
 import dev.yumi.mc.core.api.entrypoint.ModInitializer;
 import net.minecraft.SystemReport;
 import net.minecraft.resources.Identifier;
@@ -21,7 +22,6 @@ import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Stack;
 
 @ApiStatus.Internal
@@ -50,14 +50,14 @@ public final class YumiFoundationMod implements ModInitializer {
 			for (var target : EventSideTarget.VALUES) {
 				// Search if the callback qualifies is unique to this event.
 				if (target.listenerClass().isAssignableFrom(event.type())) {
-					List<?> entrypoints = YumiMods.get().getEntrypoints(target.entrypointKey(), target.listenerClass());
+					var entrypoints = YumiMods.get().getEntrypoints(target.entrypointKey(), target.listenerClass());
 
 					// Search for matching entrypoint.
-					for (Object entrypoint : entrypoints) {
+					for (EntrypointContainer<?> entrypoint : entrypoints) {
 						// Searching if the given entrypoint is a listener of the event being registered.
-						if (event.type().isAssignableFrom(entrypoint.getClass())) {
+						if (event.type().isAssignableFrom(entrypoint.value().getClass())) {
 							// It is, then register the listener.
-							manager.listenAll(entrypoint, event);
+							manager.listenAll(entrypoint.value(), event);
 						}
 					}
 
