@@ -25,7 +25,7 @@ lambdamcdev {
 			}
 			this.withLicense(Constants.LICENSE_NAME)
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationMod")
-			this.withDepend("minecraft", "~26.1-")
+			this.withDepend("minecraft", "~26.2-")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
 			this.withDepend("yumi_commons_event", "~${libs.versions.yumi.commons.get()}")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
@@ -69,13 +69,6 @@ val testmod: SourceSet by sourceSets.creating {
 	this.runtimeClasspath += sourceSets.main.get().runtimeClasspath
 }
 
-afterEvaluate {
-	val shims: SourceSet by sourceSets.creating {
-		this.compileClasspath += configurations["minecraftNamedCompile"]
-		sourceSets.main.get().compileClasspath += this.output
-	}
-}
-
 dependencies {
 	api(libs.jspecify)
 	api(libs.yumi.commons.core) {
@@ -99,6 +92,7 @@ dependencies {
 
 	compileOnly(libs.fabric.loader)
 	compileOnly(libs.neoforge.loader)
+	compileOnly(variantOf(libs.neoforge.api) { classifier("universal") })
 	localRuntime(libs.fabric.loader)
 
 	"testmodImplementation"(sourceSets.main.get().output)
@@ -165,7 +159,6 @@ tasks.build.get().dependsOn(testmodJar)
 
 license {
 	rule(rootProject.file("codeformat/HEADER"))
-	excludeSourceSet("shims")
 }
 
 // Setup publishing of artifacts.
