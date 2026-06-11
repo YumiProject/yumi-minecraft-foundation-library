@@ -34,9 +34,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandleProxies;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,14 +124,18 @@ final class CommonEntrypointStorage implements EntrypointStorage {
 					throw new IllegalArgumentException("Class " + c.getName() + " cannot be cast to " + type.getName() + "!");
 				}
 			} else /* length == 2 */ {
-				List<Method> methodList = new ArrayList<>();
+				List<Executable> candidates = new ArrayList<>();
 
 				for (Method m : c.getDeclaredMethods()) {
 					if (!(m.getName().equals(methodSplit[1]))) {
 						continue;
 					}
 
-					methodList.add(m);
+					candidates.add(m);
+				}
+
+				if (methodSplit[1].equals("<init>")) {
+					candidates.addAll(List.of(c.getDeclaredConstructors()));
 				}
 
 				try {
@@ -144,7 +146,7 @@ final class CommonEntrypointStorage implements EntrypointStorage {
 						throw new IllegalArgumentException("Field " + value + " must be static!");
 					}
 
-					if (!methodList.isEmpty()) {
+					if (!candidates.isEmpty()) {
 						throw new IllegalArgumentException("Ambiguous " + value + " - refers to both field and method!");
 					}
 
@@ -163,28 +165,36 @@ final class CommonEntrypointStorage implements EntrypointStorage {
 					throw new IllegalArgumentException("Cannot proxy method " + value + " to non-interface type " + type.getName() + "!");
 				}
 
-				if (methodList.isEmpty()) {
+				if (candidates.isEmpty()) {
 					throw new IllegalArgumentException("Could not find " + value + "!");
-				} else if (methodList.size() >= 2) {
+				} else if (candidates.size() >= 2) {
 					throw new IllegalArgumentException("Found multiple method entries of name " + value + "!");
 				}
 
-				final Method targetMethod = methodList.getFirst();
+				final Executable targetExecutable = candidates.getFirst();
 				Object object = null;
 
-				if ((targetMethod.getModifiers() & Modifier.STATIC) == 0) {
-					try {
-						object = c.getDeclaredConstructor().newInstance();
-					} catch (Exception e) {
-						throw new IllegalArgumentException(e);
+				if (targetExecutable instanceof Method targetMethod) {
+					if ((targetMethod.getModifiers() & Modifier.STATIC) == 0) {
+						try {
+							object = c.getDeclaredConstructor().newInstance();
+						} catch (Exception e) {
+							throw new IllegalArgumentException(e);
+						}
 					}
 				}
 
 				MethodHandle handle;
 
 				try {
-					handle = MethodHandles.lookup()
-							.unreflect(targetMethod);
+					if (targetExecutable instanceof Method targetMethod) {
+						handle = MethodHandles.lookup()
+								.unreflect(targetMethod);
+					} else {
+						var targetConstructor = (Constructor<?>) targetExecutable;
+						handle = MethodHandles.lookup()
+								.unreflectConstructor(targetConstructor);
+					}
 				} catch (Exception ex) {
 					throw new IllegalArgumentException(ex);
 				}

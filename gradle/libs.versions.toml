@@ -1,16 +1,17 @@
 [versions]
 minecraft = "26.1"
-fabric-loader = "0.18.5"
-neoforge-loader = "11.0.0"
+fabric-loader = "0.19.3"
+neoforge-loader = "11.0.13"
+neoforge-api = "26.1.2.71"
 
 # Dependencies
 jspecify = "1.0.0"
 yumi-commons = "2.0.0"
 
 # Gradle
-gradle-licenser = "2.2.+"
-gradle-loom = "1.15.+"
-gradle-lambdamcdev = "2.0.+"
+gradle-licenser = "4.0.+"
+gradle-loom = "1.16.+"
+gradle-lambdamcdev = "2.2.+"
 gradle-nexus-publish = "2.0.0"
 gson = "2.11.0"
 
@@ -18,6 +19,7 @@ gson = "2.11.0"
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 neoforge-loader = { module = "net.neoforged.fancymodloader:loader", version.ref = "neoforge-loader" }
+neoforge-api = { module = "net.neoforged:neoforge", version.ref = "neoforge-api" }
 
 # Dependencies
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }

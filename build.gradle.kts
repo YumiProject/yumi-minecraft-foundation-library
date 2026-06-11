@@ -69,13 +69,6 @@ val testmod: SourceSet by sourceSets.creating {
 	this.runtimeClasspath += sourceSets.main.get().runtimeClasspath
 }
 
-afterEvaluate {
-	val shims: SourceSet by sourceSets.creating {
-		this.compileClasspath += configurations["minecraftNamedCompile"]
-		sourceSets.main.get().compileClasspath += this.output
-	}
-}
-
 dependencies {
 	api(libs.jspecify)
 	api(libs.yumi.commons.core) {
@@ -99,6 +92,7 @@ dependencies {
 
 	compileOnly(libs.fabric.loader)
 	compileOnly(libs.neoforge.loader)
+	compileOnly(variantOf(libs.neoforge.api) { classifier("universal") })
 	localRuntime(libs.fabric.loader)
 
 	"testmodImplementation"(sourceSets.main.get().output)
@@ -165,7 +159,8 @@ tasks.build.get().dependsOn(testmodJar)
 
 license {
 	rule(rootProject.file("codeformat/HEADER"))
-	excludeSourceSet("shims")
+
+	include("**/*.java")
 }
 
 // Setup publishing of artifacts.
