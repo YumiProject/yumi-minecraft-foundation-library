@@ -39,7 +39,7 @@ lambdamcdev {
 		nmt {
 			fmj.copyTo(this)
 			this.withLoaderVersion("[2,)")
-			this.withDepend("minecraft", "[${libs.versions.minecraft.get()})")
+			this.withDepend("minecraft", "[${libs.versions.minecraft.get()},)")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
 			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiFoundationMod")
 		}
