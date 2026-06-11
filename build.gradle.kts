@@ -1,5 +1,4 @@
 import dev.lambdaurora.mcdev.api.McVersionLookup
-import dev.yumi.gradle.licenser.task.CheckLicenseTask
 import yumimc.Constants
 
 plugins {
@@ -162,11 +161,6 @@ license {
 	rule(rootProject.file("codeformat/HEADER"))
 
 	include("**/*.java")
-}
-
-tasks.withType(CheckLicenseTask::class.java) {
-	dependsOn(tasks.named("generateFmj"))
-	dependsOn(tasks.named("generateNmt"))
 }
 
 // Setup publishing of artifacts.
