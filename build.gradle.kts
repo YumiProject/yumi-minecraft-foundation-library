@@ -64,7 +64,7 @@ repositories {
 	}
 }
 
-val testmod: SourceSet by sourceSets.creating {
+val testmod = sourceSets.create("testmod") {
 	this.compileClasspath += sourceSets.main.get().compileClasspath
 	this.runtimeClasspath += sourceSets.main.get().runtimeClasspath
 }
@@ -216,8 +216,8 @@ publishing {
 
 nexusPublishing {
 	repositories {
-		val mavenCentralKey: String? by project
-		val mavenCentralSecret: String? by project
+		val mavenCentralKey = project.findProperty("mavenCentralKey") as String?
+		val mavenCentralSecret = project.findProperty("mavenCentralSecret") as String?
 
 		if (mavenCentralKey != null && mavenCentralSecret != null) {
 			sonatype {
@@ -233,9 +233,9 @@ nexusPublishing {
 
 // Setup signing.
 signing {
-	val signingKeyId: String? by rootProject
-	val signingKey: String? by rootProject
-	val signingPassword: String? by rootProject
+	val signingKeyId: String? = rootProject.findProperty("signingKeyId") as String?
+	val signingKey: String? = rootProject.findProperty("signingKey") as String?
+	val signingPassword: String? = rootProject.findProperty("signingPassword") as String?
 	isRequired = signingKeyId != null && signingKey != null && signingPassword != null
 	useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
 

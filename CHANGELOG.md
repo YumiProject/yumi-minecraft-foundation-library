@@ -15,3 +15,7 @@
 ### 1.1.1
 
 - Fixed NeoForge dependency requirement.
+
+### 1.1.2
+
+- Fixed NeoForge deferred register hook.
