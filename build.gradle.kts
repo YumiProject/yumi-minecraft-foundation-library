@@ -25,7 +25,7 @@ lambdamcdev {
 			}
 			this.withLicense(Constants.LICENSE_NAME)
 			this.withEntrypoints("yumi:init", "dev.yumi.mc.core.impl.YumiFoundationMod")
-			this.withDepend("minecraft", "~26.1-")
+			this.withDepend("minecraft", ">=26.1-")
 			this.withDepend("java", ">=${Constants.JAVA_VERSION}")
 			this.withDepend("yumi_commons_event", "~${libs.versions.yumi.commons.get()}")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
@@ -39,7 +39,7 @@ lambdamcdev {
 		nmt {
 			fmj.copyTo(this)
 			this.withLoaderVersion("[2,)")
-			this.withDepend("minecraft", "[${libs.versions.minecraft.get()},26.2)")
+			this.withDepend("minecraft", "[${libs.versions.minecraft.get()},)")
 			this.withMixins("yumi_mc_core.mixins.json", "yumi_mc_core.neoforge.mixins.json")
 			this.withCustom("\"yumi:entrypoints\".\"yumi:init\"", "dev.yumi.mc.core.impl.YumiFoundationMod")
 		}
