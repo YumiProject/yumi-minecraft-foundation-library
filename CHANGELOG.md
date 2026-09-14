@@ -19,3 +19,7 @@
 ### 1.1.2
 
 - Fixed NeoForge deferred register hook.
+
+### 1.1.3
+
+- Updated Minecraft dependency constraints.
